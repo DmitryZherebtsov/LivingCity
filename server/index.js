@@ -1,14 +1,29 @@
+require('dotenv').config();
 const express = require('express');
+const pool = require('./config/dbConfig');
+
+const testRoutes = require('./routes/testRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
 app.use(express.json());
 
+// тест з'єднання з БД
+pool.query('SELECT 1')
+  .then(() => console.log('✅ PostgreSQL connected'))
+  .catch(err => {
+    console.error('❌ DB connection error', err);
+    process.exit(1);
+  });
+
+// routes
+app.use('/api/tests', testRoutes);
+
+// root
 app.get('/', (req, res) => {
-    res.send('Welcome to LivingCity Server!');
+  res.send('LivingCity API is running');
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
