@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
@@ -6,19 +6,34 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import './Map.css';
 
-
 const Map = () => {
   const mapRef = useRef(null);
   const containerRef = useRef(null);
-  const isRotatingRef = useRef(false);
+  const [events, setEvents] = useState([]);
 
+  // 1. Fetch event data from the API
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('/api/events');
+        const data = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  // 2. Initialize the Map
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/dmitryzh/cmgdrdox900du01sa2oenbhr8',
-      center: [10, 50], // Європа
+      center: [10, 50], // Europe
       zoom: 3.5,
       pitch: 0,
       bearing: 0,
@@ -39,7 +54,6 @@ const Map = () => {
 
     geocoder.on('result', (e) => {
       const [lng, lat] = e.result.center;
-
       map.flyTo({
         center: [lng, lat],
         zoom: 11,
@@ -52,10 +66,33 @@ const Map = () => {
     return () => map.remove();
   }, []);
 
+  // 3. Add markers whenever events data is loaded/updated
+  useEffect(() => {
+    if (!mapRef.current || events.length === 0) return;
+
+    events.forEach((event) => {
+      // Skip events with invalid coordinates (like the 0,0 example)
+      if (parseFloat(event.lat) === 0 && parseFloat(event.lon) === 0) return;
+
+      // Create a popup with event details
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+        <h3>${event.title}</h3>
+        <p><strong>${event.event_type}</strong></p>
+        <p>${event.description}</p>
+        <a href="${event.url}" target="_blank" rel="noopener noreferrer">More Info</a>
+      `);
+
+      // Add marker to the map
+      new mapboxgl.Marker({ color: '#ff4d4d' }) // You can customize marker color based on event_type
+        .setLngLat([parseFloat(event.lon), parseFloat(event.lat)])
+        .setPopup(popup)
+        .addTo(mapRef.current);
+    });
+  }, [events]);
+
   return (
     <>
       <div ref={containerRef} className="map-container" />
-
     </>
   );
 };

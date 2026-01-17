@@ -6,9 +6,11 @@ const testRoutes = require('./routes/testRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
+const cors = require('cors');
 app.use(express.json());
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174']
 
-// тест з'єднання з БД
+
 pool.query('SELECT 1')
   .then(() => console.log('✅ PostgreSQL connected'))
   .catch(err => {
@@ -16,11 +18,11 @@ pool.query('SELECT 1')
     process.exit(1);
   });
 
-// routes
+
 app.use('/api/tests', testRoutes);
 app.use('/api/events', eventRoutes);
+app.use(cors({origin: allowedOrigins, credentials: true}))
 
-// root
 app.get('/', (req, res) => {
   res.send('LivingCity API is running');
 });

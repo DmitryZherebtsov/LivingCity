@@ -16,14 +16,14 @@ body,
   bottom: 0;
 }
 
-.event-marker {
-  display: block;
-  box-sizing: border-box;
-  /* inline styles зададуть розмір та колір; тут лише запасні стилі */
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-  cursor: pointer;
+.map-container {
+  width: 100%;
+  height: 100vh; /* Adjust as needed */
+}
+
+/* Optional: styling for the popups */
+.mapboxgl-popup-content {
+  color: #333;
+  padding: 15px;
+  border-radius: 8px;
 }
