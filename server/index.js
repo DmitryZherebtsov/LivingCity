@@ -3,6 +3,7 @@ const express = require('express');
 const pool = require('./config/dbConfig');
 
 const testRoutes = require('./routes/testRoutes');
+const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
 app.use(express.json());
@@ -17,6 +18,7 @@ pool.query('SELECT 1')
 
 // routes
 app.use('/api/tests', testRoutes);
+app.use('/api/events', eventRoutes);
 
 // root
 app.get('/', (req, res) => {
@@ -27,3 +29,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
