@@ -6,7 +6,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import './Map.css';
 
-import MapEvents from './MapEvents';
 
 const Map = () => {
   const mapRef = useRef(null);
@@ -56,11 +55,7 @@ const Map = () => {
   return (
     <>
       <div ref={containerRef} className="map-container" />
-      <MapEvents
-        mapRef={mapRef}
-        isRotatingRef={isRotatingRef}
-        endpoint="http://localhost:3000/api/events"
-      />
+
     </>
   );
 };
