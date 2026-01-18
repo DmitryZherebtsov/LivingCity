@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const pool = require('./config/dbConfig');
 
-const testRoutes = require('./routes/testRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
@@ -18,8 +17,6 @@ pool.query('SELECT 1')
     process.exit(1);
   });
 
-
-app.use('/api/tests', testRoutes);
 app.use('/api/events', eventRoutes);
 app.use(cors({origin: allowedOrigins, credentials: true}))
 

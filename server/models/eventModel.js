@@ -1,6 +1,7 @@
 const pool = require('../config/dbConfig');
 
 // Create
+// Create
 const createEvent = async (data) => {
   const {
     title,
@@ -16,17 +17,18 @@ const createEvent = async (data) => {
     capacity,
     is_free,
     metadata = {},
+    visitor_count = 0, // <- нове поле
   } = data;
 
   const q = `
     INSERT INTO events
-      (title, description, event_type, url, organizer, address, lon, lat, start_time, end_time, capacity, is_free, metadata)
+      (title, description, event_type, url, organizer, address, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count)
     VALUES
-      ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+      ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
     RETURNING *;
   `;
 
-  const values = [title, description, event_type, url, organizer, address, lon, lat, start_time, end_time, capacity, is_free, metadata];
+  const values = [title, description, event_type, url, organizer, address, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count];
 
   const res = await pool.query(q, values);
   return res.rows[0];
