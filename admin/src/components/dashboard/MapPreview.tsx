@@ -1,6 +1,6 @@
 import { MapPin, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Event } from '@/services/eventsService'; // Імпорт типу Event
+import { Event } from '@/services/eventsService';
 
 export interface MapPreviewProps {
   events: Event[];
@@ -23,27 +23,32 @@ export function MapPreview({ events }: MapPreviewProps) {
         </div>
         <Button variant="outline" size="sm" className="text-xs">
           <Maximize2 className="w-3.5 h-3.5 mr-1.5" />
-          Full View
+          <a href="http://localhost:5173/">Full View</a>
         </Button>
       </div>
       <div className="relative h-64 bg-gradient-to-br from-secondary via-muted to-secondary">
-        {/* Simplified map visualization */}
-        <div className="absolute inset-0 opacity-20">
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <path
-              d="M10,30 Q20,15 35,20 T50,30 T70,25 T90,35 L90,80 L10,80 Z"
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+      <svg
+        viewBox="0 0 200 120"
+        preserveAspectRatio="xMidYMid slice"
+        className="w-full h-full"
+      >
+        <path d="M10,20
+                L30,10
+                Q60,0 90,15
+                T140,20
+                L180,35
+                L170,70
+                Q140,95 100,85
+                T30,90
+                L10,70
+                Z"
               fill="currentColor"
-              className="text-primary"
-            />
-            <path
-              d="M5,50 Q25,40 45,55 T75,45 T95,55 L95,80 L5,80 Z"
-              fill="currentColor"
-              className="text-primary/50"
-            />
-          </svg>
-        </div>
+              className="text-primary/60" />
+      </svg>
+    </div>
+
         
-        {/* Event pins */}
         {eventPins.map((pin) => (
           <div
             key={pin.id}
@@ -60,7 +65,6 @@ export function MapPreview({ events }: MapPreviewProps) {
           </div>
         ))}
 
-        {/* Map controls */}
         <div className="absolute right-4 bottom-4 flex flex-col gap-1">
           <Button variant="secondary" size="icon" className="w-8 h-8">
             <ZoomIn className="w-4 h-4" />

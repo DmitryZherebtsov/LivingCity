@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from "react";
 import { CalendarDays, Users, MapPin, TrendingUp, Plus, Filter, Download } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { RecentEventsTable } from "@/components/dashboard/RecentEventsTable";
@@ -10,13 +10,36 @@ import type { Event, Stats } from '@/services/eventsService'; // Імпорт т
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats>({
-    totalEvents: '0',
-    activeLocations: '0',
-    totalAttendees: '0K',
-    growthRate: '0%',
+    totalEvents: "0",
+    totalEventsChange: "0%",
+    activeLocations: "0",
+    upcomingEvents: "0",
+    totalAttendees: "0K",
+    totalAttendeesChange: "0%",
+    growthRate: "0%",
+    growthRateChange: "0%",
   });
+
   const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const filteredEvents = useMemo(() => {
+    if (!searchQuery.trim()) return events;
+
+    const q = searchQuery.toLowerCase();
+
+    return events.filter((event) => {
+      return (
+        event.title?.toLowerCase().includes(q) ||
+        event.address?.toLowerCase().includes(q) ||
+        event.organizer?.toLowerCase().includes(q) ||
+        event.event_type?.toLowerCase().includes(q) ||
+        event.description?.toLowerCase().includes(q)
+      );
+    });
+  }, [events, searchQuery]);
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -53,13 +76,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Search & Filter Bar */}
+      {/* Search and  Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Input
             placeholder="Search events, locations..."
             className="pl-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
+
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         </div>
         <Button variant="outline">
@@ -73,7 +99,7 @@ export default function Dashboard() {
         <StatCard
           title="Total Events"
           value={stats.totalEvents}
-          change="+12% from last month"
+          change={stats.totalEventsChange}
           changeType="positive"
           icon={CalendarDays}
           gradient={1}
@@ -81,7 +107,7 @@ export default function Dashboard() {
         <StatCard
           title="Active Locations"
           value={stats.activeLocations}
-          change="+8 new this week"
+          change={`Upcoming ${stats.upcomingEvents}`}
           changeType="positive"
           icon={MapPin}
           gradient={2}
@@ -89,7 +115,7 @@ export default function Dashboard() {
         <StatCard
           title="Total Attendees"
           value={stats.totalAttendees}
-          change="+23% from last month"
+          change={stats.totalAttendeesChange}
           changeType="positive"
           icon={Users}
           gradient={3}
@@ -97,7 +123,7 @@ export default function Dashboard() {
         <StatCard
           title="Growth Rate"
           value={stats.growthRate}
-          change="+2.4% from last week"
+          change={stats.growthRateChange}
           changeType="positive"
           icon={TrendingUp}
           gradient={4}
@@ -107,7 +133,7 @@ export default function Dashboard() {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <RecentEventsTable events={events} />
+          <RecentEventsTable events={filteredEvents} />
         </div>
         <div>
           <MapPreview events={events} />

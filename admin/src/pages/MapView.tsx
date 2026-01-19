@@ -20,7 +20,6 @@ export default function MapView() {
 
   return (
     <div className="h-screen flex flex-col">
-      {/* Header */}
       <div className="p-4 lg:p-6 border-b border-border bg-card/50">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex-1">
@@ -48,9 +47,7 @@ export default function MapView() {
 
       {/* Map Area */}
       <div className="flex-1 flex">
-        {/* Map */}
         <div className="flex-1 relative bg-gradient-to-br from-muted via-secondary to-muted overflow-hidden">
-          {/* Decorative map elements */}
           <div className="absolute inset-0 opacity-10">
             <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="none">
               <defs>
@@ -71,7 +68,7 @@ export default function MapView() {
             </svg>
           </div>
 
-          {/* Event Pins */}
+          {/* Event Pins  */}
           {eventLocations.map((event) => (
             <div
               key={event.id}

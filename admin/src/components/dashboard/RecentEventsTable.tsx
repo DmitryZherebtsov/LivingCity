@@ -9,68 +9,126 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar } from "lucide-react";
 
-import { Event } from '@/services/eventsService';
+export type ApiEvent = {
+  id: number;
+  title: string;
+  description?: string;
+  event_type?: string;
+  url?: string;
+  organizer?: string;
+  address?: string;
+  lon?: string;
+  lat?: string;
+  start_time?: string | null; // ISO
+  end_time?: string | null;   // ISO
+  capacity?: number | null;
+  is_free?: boolean;
+  metadata?: Record<string, any>;
+  created_at?: string;
+  updated_at?: string;
+  visitor_count?: number | null;
+};
 
-export interface RecentEventsTableProps {
-  events: Event[];
-}
-
-const recentEvents = [
-  {
-    id: 1,
-    name: "Tech Conference 2024",
-    location: "San Francisco, CA",
-    date: "Mar 15, 2024",
-    attendees: 1250,
-    status: "upcoming",
-  },
-  {
-    id: 2,
-    name: "Music Festival",
-    location: "Austin, TX",
-    date: "Mar 20, 2024",
-    attendees: 5000,
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "Food & Wine Expo",
-    location: "New York, NY",
-    date: "Mar 25, 2024",
-    attendees: 800,
-    status: "upcoming",
-  },
-  {
-    id: 4,
-    name: "Art Gallery Opening",
-    location: "Los Angeles, CA",
-    date: "Mar 10, 2024",
-    attendees: 320,
-    status: "completed",
-  },
-  {
-    id: 5,
-    name: "Startup Pitch Night",
-    location: "Seattle, WA",
-    date: "Mar 28, 2024",
-    attendees: 150,
-    status: "upcoming",
-  },
-];
+type Props = {
+  events?: ApiEvent[] | null;
+};
 
 const statusStyles = {
   upcoming: "bg-accent text-accent-foreground",
   active: "bg-success/10 text-success",
   completed: "bg-muted text-muted-foreground",
-};
+} as const;
 
-export function RecentEventsTable({ events }: RecentEventsTableProps) {
+function getStatus(startISO?: string | null, endISO?: string | null) {
+  const now = new Date();
+  const start = startISO ? new Date(startISO) : null;
+  const end = endISO ? new Date(endISO) : null;
+
+  if (start && now < start) return "upcoming";
+  if (start && end && now >= start && now <= end) return "active";
+  if (end && now > end) return "completed";
+
+  if (start && !end) {
+    return now >= start ? "active" : "upcoming";
+  }
+  return "upcoming";
+}
+
+function formatDateRange(startISO?: string | null, endISO?: string | null) {
+  if (!startISO && !endISO) return "—";
+
+  const tz = "Europe/Warsaw";
+
+  const dateOpts: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: tz,
+  };
+
+  const timeOpts: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: tz,
+  };
+
+  const start = startISO ? new Date(startISO) : null;
+  const end = endISO ? new Date(endISO) : null;
+
+  if (start && end) {
+    const sameDay =
+      start.getFullYear() === end.getFullYear() &&
+      start.getMonth() === end.getMonth() &&
+      start.getDate() === end.getDate();
+
+    if (sameDay) {
+      const date = new Intl.DateTimeFormat("pl-PL", dateOpts).format(start);
+      const from = new Intl.DateTimeFormat("pl-PL", timeOpts).format(start);
+      const to = new Intl.DateTimeFormat("pl-PL", timeOpts).format(end);
+      return `${date}, ${from} - ${to}`;
+    }
+
+    const startStr = new Intl.DateTimeFormat("pl-PL", {
+      ...dateOpts,
+      ...timeOpts,
+    }).format(start);
+
+    const endStr = new Intl.DateTimeFormat("pl-PL", {
+      ...dateOpts,
+      ...timeOpts,
+    }).format(end);
+
+    return `${startStr} - ${endStr}`;
+  }
+
+  if (start) {
+    return new Intl.DateTimeFormat("pl-PL", {
+      ...dateOpts,
+      ...timeOpts,
+    }).format(start);
+  }
+
+  if (end) {
+    return new Intl.DateTimeFormat("pl-PL", {
+      ...dateOpts,
+      ...timeOpts,
+    }).format(end);
+  }
+
+  return "—";
+}
+
+
+export function RecentEventsTable({ events }: Props) {
+  const list = events ?? [];
+
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden animate-fade-in">
       <div className="px-6 py-4 border-b border-border">
         <h3 className="font-semibold text-card-foreground">Recent Events</h3>
         <p className="text-sm text-muted-foreground">Latest event activities</p>
       </div>
+
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -79,34 +137,61 @@ export function RecentEventsTable({ events }: RecentEventsTableProps) {
             <TableHead className="font-medium">Date</TableHead>
             <TableHead className="font-medium text-right">Attendees</TableHead>
             <TableHead className="font-medium">Status</TableHead>
+            <TableHead className="font-medium">Type</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
-          {recentEvents.map((event) => (
-            <TableRow key={event.id} className="cursor-pointer">
-              <TableCell className="font-medium">{event.name}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {event.location}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <Calendar className="w-3.5 h-3.5" />
-                  {event.date}
-                </div>
-              </TableCell>
-              <TableCell className="text-right">{event.attendees.toLocaleString()}</TableCell>
-              <TableCell>
-                <Badge variant="secondary" className={statusStyles[event.status as keyof typeof statusStyles]}>
-                  {event.status}
-                </Badge>
-              </TableCell>
-            </TableRow>
-          ))}
+          {list.map((event) => {
+            const status = getStatus(event.start_time, event.end_time) as
+              | "upcoming"
+              | "active"
+              | "completed";
+            const attendees =
+              event.visitor_count ?? event.capacity ?? null; // fallback
+            return (
+              <TableRow key={event.id} className="cursor-pointer">
+                <TableCell className="font-medium">{event.title}</TableCell>
+
+                <TableCell>
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <MapPin className="w-3.5 h-3.5" />
+                    {event.address ?? "—"}
+                  </div>
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {formatDateRange(event.start_time, event.end_time)}
+                  </div>
+                </TableCell>
+
+                <TableCell className="text-right">
+                  {attendees !== null ? attendees.toLocaleString() : "—"}
+                </TableCell>
+
+                <TableCell>
+                  <Badge
+                    variant="secondary"
+                    className={statusStyles[status as keyof typeof statusStyles]}
+                  >
+                    {status}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>
+                  <Badge>
+                    {event.event_type}
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
   );
 }
+
+export default RecentEventsTable;

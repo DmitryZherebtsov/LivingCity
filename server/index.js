@@ -6,7 +6,7 @@ const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
 
-/* ---------- CORS MUST BE FIRST ---------- */
+/* ---------- CORS ---------- */
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
