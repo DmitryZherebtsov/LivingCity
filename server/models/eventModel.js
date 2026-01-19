@@ -9,6 +9,7 @@ const createEvent = async (data) => {
     url,
     organizer,
     address,
+    city,
     lon,
     lat,
     start_time,
@@ -21,13 +22,13 @@ const createEvent = async (data) => {
 
   const q = `
     INSERT INTO events
-      (title, description, event_type, url, organizer, address, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count)
+      (title, description, event_type, url, organizer, address, city, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count)
     VALUES
-      ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+      ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
     RETURNING *;
   `;
 
-  const values = [title, description, event_type, url, organizer, address, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count];
+  const values = [title, description, event_type, url, organizer, address, city, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count];
 
   const res = await pool.query(q, values);
   return res.rows[0];
@@ -88,9 +89,8 @@ const getEventById = async (id) => {
 };
 
 // Update
-// Update
 const updateEvent = async (id, data) => {
-  const allowed = ['title','description','event_type','url','organizer','address','lon','lat','start_time','end_time','capacity','is_free','metadata', 'visitor_count']; 
+  const allowed = ['title','description','event_type','url','organizer','address','city','lon','lat','start_time','end_time','capacity','is_free','metadata', 'visitor_count']; 
   const sets = [];
   const values = [];
   let idx = 1;

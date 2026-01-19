@@ -19,8 +19,8 @@ export type ApiEvent = {
   address?: string;
   lon?: string;
   lat?: string;
-  start_time?: string | null; // ISO
-  end_time?: string | null;   // ISO
+  start_time?: string | null; 
+  end_time?: string | null;  
   capacity?: number | null;
   is_free?: boolean;
   metadata?: Record<string, any>;
@@ -120,7 +120,14 @@ function formatDateRange(startISO?: string | null, endISO?: string | null) {
 
 
 export function RecentEventsTable({ events }: Props) {
-  const list = events ?? [];
+  const list = (events ?? [])
+    .slice() 
+    .sort((a, b) => {
+      const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return bTime - aTime; 
+    })
+    .slice(0, 3); 
 
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden animate-fade-in">

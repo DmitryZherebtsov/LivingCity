@@ -25,20 +25,29 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const filteredEvents = useMemo(() => {
-    if (!searchQuery.trim()) return events;
+  const query = searchQuery.trim().toLowerCase();
+  if (!query) return events;
 
-    const q = searchQuery.toLowerCase();
+  const isNumeric = /^\d+$/.test(query);
+  const idQuery = Number(query);
 
-    return events.filter((event) => {
-      return (
-        event.title?.toLowerCase().includes(q) ||
-        event.address?.toLowerCase().includes(q) ||
-        event.organizer?.toLowerCase().includes(q) ||
-        event.event_type?.toLowerCase().includes(q) ||
-        event.description?.toLowerCase().includes(q)
-      );
-    });
-  }, [events, searchQuery]);
+  return events.filter((event) => {
+    if (isNumeric) {
+      return event.id === idQuery;
+    }
+
+    return [
+      event.title,
+      event.address,
+      event.organizer,
+      event.event_type,
+      event.description,
+    ].some((field) =>
+      field?.toLowerCase().includes(query)
+    );
+  });
+}, [events, searchQuery]);
+
 
 
   useEffect(() => {

@@ -18,6 +18,7 @@ export interface Event {
   created_at: string;
   updated_at: string;
   visitor_count: number;
+  city: string | null;
 }
 
 export interface Stats {
