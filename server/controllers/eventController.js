@@ -27,8 +27,8 @@ const list = async (req, res) => {
   try {
     const { page, limit, event_type, q, lat, lon, radius_km } = req.query;
     const options = {
-      page: page ? parseInt(page, 10) : 1,
-      limit: limit ? Math.min(parseInt(limit, 10), 200) : 20,
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? Math.min(parseInt(limit, 10), 200) : undefined,
       event_type,
       qtext: q,
     };
@@ -46,6 +46,7 @@ const list = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 const getOne = async (req, res) => {
   try {
@@ -87,10 +88,23 @@ const remove = async (req, res) => {
   }
 };
 
+const incrementVisitors = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const updatedEvent = await eventModel.incrementVisitorCount(id);
+    res.json(updatedEvent);
+  } catch (err) {
+    console.error(err);
+    if (err.message === 'Event not found') return res.status(404).json({ error: 'Not found' });
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 module.exports = {
   create,
   list,
   getOne,
   update,
   remove,
+  incrementVisitors,
 };

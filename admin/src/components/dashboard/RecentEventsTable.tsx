@@ -9,6 +9,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar } from "lucide-react";
 
+import { Event } from '@/services/eventsService';
+
+export interface RecentEventsTableProps {
+  events: Event[];
+}
+
 const recentEvents = [
   {
     id: 1,
@@ -58,7 +64,7 @@ const statusStyles = {
   completed: "bg-muted text-muted-foreground",
 };
 
-export function RecentEventsTable() {
+export function RecentEventsTable({ events }: RecentEventsTableProps) {
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden animate-fade-in">
       <div className="px-6 py-4 border-b border-border">

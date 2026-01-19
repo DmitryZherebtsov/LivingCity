@@ -1,15 +1,34 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const pool = require('./config/dbConfig');
-
 const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
-const cors = require('cors');
+
+/* ---------- CORS MUST BE FIRST ---------- */
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:8080',
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
+/* ---------- BODY PARSER ---------- */
 app.use(express.json());
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:8080']
 
+/* ---------- ROUTES ---------- */
+app.use('/api/events', eventRoutes);
 
+app.get('/', (req, res) => {
+  res.send('LivingCity API is running');
+});
+
+/* ---------- DB CHECK ---------- */
 pool.query('SELECT 1')
   .then(() => console.log('✅ PostgreSQL connected'))
   .catch(err => {
@@ -17,15 +36,8 @@ pool.query('SELECT 1')
     process.exit(1);
   });
 
-app.use('/api/events', eventRoutes);
-app.use(cors({origin: allowedOrigins, credentials: true}))
-
-app.get('/', (req, res) => {
-  res.send('LivingCity API is running');
-});
-
+/* ---------- SERVER ---------- */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-

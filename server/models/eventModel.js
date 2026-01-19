@@ -1,7 +1,6 @@
 const pool = require('../config/dbConfig');
 
 // Create
-// Create
 const createEvent = async (data) => {
   const {
     title,
@@ -17,7 +16,7 @@ const createEvent = async (data) => {
     capacity,
     is_free,
     metadata = {},
-    visitor_count = 0, // <- нове поле
+    visitor_count = 0,
   } = data;
 
   const q = `
@@ -35,8 +34,7 @@ const createEvent = async (data) => {
 };
 
 // Read list with pagination, filters, and optional nearby search (lat, lon, radius_km)
-const getEvents = async ({ page = 1, limit = 20, event_type, qtext, lat, lon, radius_km } = {}) => {
-  const offset = (page - 1) * limit;
+const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km } = {}) => {
   const params = [];
   let where = 'WHERE 1=1';
 
@@ -62,14 +60,21 @@ const getEvents = async ({ page = 1, limit = 20, event_type, qtext, lat, lon, ra
     ) <= $${idx+2}`;
   }
 
-  params.push(limit, offset);
-  const q = `
+  let q = `
     SELECT *
     FROM events
     ${where}
     ORDER BY start_time NULLS LAST, created_at DESC
-    LIMIT $${params.length - 1} OFFSET $${params.length};
   `;
+
+  // Only apply pagination if both page and limit are provided
+  if (page !== undefined && limit !== undefined) {
+    const offset = (page - 1) * limit;
+    params.push(limit, offset);
+    q += ` LIMIT $${params.length - 1} OFFSET $${params.length};`;
+  } else {
+    q += ';'; 
+  }
 
   const rows = (await pool.query(q, params)).rows;
 
@@ -83,8 +88,9 @@ const getEventById = async (id) => {
 };
 
 // Update
+// Update
 const updateEvent = async (id, data) => {
-  const allowed = ['title','description','event_type','url','organizer','address','lon','lat','start_time','end_time','capacity','is_free','metadata'];
+  const allowed = ['title','description','event_type','url','organizer','address','lon','lat','start_time','end_time','capacity','is_free','metadata', 'visitor_count']; 
   const sets = [];
   const values = [];
   let idx = 1;
@@ -97,14 +103,16 @@ const updateEvent = async (id, data) => {
     }
   }
 
-  if (sets.length === 0) return getEventById(id);
+  if (sets.length === 0) {
+    return getEventById(id); 
+  }
 
   sets.push(`updated_at = now()`);
 
   values.push(id);
   const q = `UPDATE events SET ${sets.join(', ')} WHERE id = $${values.length} RETURNING *`;
   const res = await pool.query(q, values);
-  return res.rows[0];
+  return res.rows[0] || null; 
 };
 
 // Delete
@@ -113,10 +121,24 @@ const deleteEvent = async (id) => {
   return true;
 };
 
+const incrementVisitorCount = async (id) => {
+  const q = `
+    UPDATE events
+    SET visitor_count = visitor_count + 1,
+        updated_at = now()
+    WHERE id = $1
+    RETURNING *;
+  `;
+  const res = await pool.query(q, [id]);
+  if (res.rows.length === 0) throw new Error('Event not found');
+  return res.rows[0];
+};
+
 module.exports = {
   createEvent,
   getEvents,
   getEventById,
   updateEvent,
   deleteEvent,
+  incrementVisitorCount,
 };

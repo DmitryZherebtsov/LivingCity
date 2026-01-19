@@ -1,6 +1,10 @@
 import { MapPin, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Event } from '@/services/eventsService'; // Імпорт типу Event
 
+export interface MapPreviewProps {
+  events: Event[];
+}
 const eventPins = [
   { id: 1, name: "Tech Conference", x: 25, y: 35 },
   { id: 2, name: "Music Festival", x: 55, y: 55 },
@@ -9,7 +13,7 @@ const eventPins = [
   { id: 5, name: "Startup Night", x: 42, y: 22 },
 ];
 
-export function MapPreview() {
+export function MapPreview({ events }: MapPreviewProps) {
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden animate-fade-in">
       <div className="px-6 py-4 border-b border-border flex items-center justify-between">

@@ -1,11 +1,38 @@
+import { useState, useEffect } from 'react';
 import { CalendarDays, Users, MapPin, TrendingUp, Plus, Filter, Download } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { RecentEventsTable } from "@/components/dashboard/RecentEventsTable";
 import { MapPreview } from "@/components/dashboard/MapPreview";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { fetchEvents, calculateStats } from '@/services/eventsService';
+import type { Event, Stats } from '@/services/eventsService'; // Імпорт типів
 
 export default function Dashboard() {
+  const [stats, setStats] = useState<Stats>({
+    totalEvents: '0',
+    activeLocations: '0',
+    totalAttendees: '0K',
+    growthRate: '0%',
+  });
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const fetchedEvents = await fetchEvents();
+      const calculatedStats = calculateStats(fetchedEvents);
+      setEvents(fetchedEvents);
+      setStats(calculatedStats);
+      setLoading(false);
+    };
+    loadData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
@@ -45,7 +72,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Events"
-          value="1,284"
+          value={stats.totalEvents}
           change="+12% from last month"
           changeType="positive"
           icon={CalendarDays}
@@ -53,7 +80,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="Active Locations"
-          value="156"
+          value={stats.activeLocations}
           change="+8 new this week"
           changeType="positive"
           icon={MapPin}
@@ -61,7 +88,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="Total Attendees"
-          value="48.5K"
+          value={stats.totalAttendees}
           change="+23% from last month"
           changeType="positive"
           icon={Users}
@@ -69,7 +96,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="Growth Rate"
-          value="18.2%"
+          value={stats.growthRate}
           change="+2.4% from last week"
           changeType="positive"
           icon={TrendingUp}
@@ -80,10 +107,10 @@ export default function Dashboard() {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <RecentEventsTable />
+          <RecentEventsTable events={events} />
         </div>
         <div>
-          <MapPreview />
+          <MapPreview events={events} />
         </div>
       </div>
     </div>
