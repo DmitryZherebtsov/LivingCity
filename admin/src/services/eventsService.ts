@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { api } from './api';
 
 export interface Event {
   id: number;
@@ -41,6 +42,10 @@ export const fetchEvents = async (): Promise<Event[]> => {
     return [];
   }
 };
+
+export async function deleteEvent(id: number) {
+  await api.delete(`/events/${id}`);
+}
 
 const safePercentChange = (current: number, previous: number): string => {
   if (previous === 0) {

@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { fetchEvents, Event } from "@/services/eventsService";
+import { fetchEvents, Event, deleteEvent } from "@/services/eventsService";
 import { EditEventModal } from "@/components/forms/EditEventModal";
 
 
@@ -75,6 +75,18 @@ export default function Events() {
   const handleNext = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this event?")) return;
+
+    try {
+      await deleteEvent(id);
+      setEvents(prev => prev.filter(event => event.id !== id));
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete event");
     }
   };
 
@@ -156,6 +168,7 @@ export default function Events() {
                           <Eye className="w-4 h-4 mr-2" />
                           View Details
                         </DropdownMenuItem>
+
                         <DropdownMenuItem
                           onClick={() => {
                             setSelectedEventId(event.id);
@@ -166,10 +179,13 @@ export default function Events() {
                           Edit
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(event.id)}
+                          className="text-destructive">
                           <Trash2 className="w-4 h-4 mr-2" />
                           Delete
                         </DropdownMenuItem>
+                        
                       </DropdownMenuContent>
                     </DropdownMenu>
                     
