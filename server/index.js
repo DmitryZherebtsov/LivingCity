@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const pool = require('./config/dbConfig');
 const eventRoutes = require('./routes/eventRoutes');
+const cookieParser = require('cookie-parser');
+const authRoutes = require('./auth/auth.routes');
 
 const app = express();
 
@@ -20,8 +22,13 @@ app.use(cors({
 
 /* ---------- BODY PARSER ---------- */
 app.use(express.json());
+app.use(cookieParser());
 
 /* ---------- ROUTES ---------- */
+
+// mount auth routes
+app.use('/auth', authRoutes);
+
 app.use('/api/events', eventRoutes);
 
 app.get('/', (req, res) => {
