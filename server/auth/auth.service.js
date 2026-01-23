@@ -15,7 +15,17 @@ async function saveRefreshToken(userId, refreshTokenPlain, ip = null, userAgent 
   return res.rows[0];
 }
 
+const revokeAllUserRefreshTokens = async (userId) => {
+  await pool.query(
+    'UPDATE refresh_tokens SET revoked = true WHERE user_id = $1',
+    [userId]
+  );
+};
+
+
 module.exports = {
   findUserByEmail,
-  saveRefreshToken
+  saveRefreshToken,
+  revokeAllUserRefreshTokens
 };
+

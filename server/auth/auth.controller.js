@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
-const { generateAccessToken, generateRefreshTokenPlain } = require('../utils/tokenUtil');
 const authService = require('./auth.service');
+const { generateAccessToken, generateRefreshTokenPlain, hashToken, refreshTokenExpiryDate } = require('../utils/tokenUtil');
+const pool = require('../config/dbConfig');
 
 const login = async (req, res) => {
   try {
@@ -14,12 +15,13 @@ const login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.status(401).json({ error: 'Invalid credentials' });
 
+    await authService.revokeAllUserRefreshTokens(user.id);
+
     // access token creat
-        const payload = {
+    const payload = {
         sub: user.id,
         email: user.email,
-        role: user.role_id,        
-        roleName: user.role_name  
+        role: user.role_id
     };
     const accessToken = generateAccessToken(payload);
 
@@ -46,6 +48,78 @@ const login = async (req, res) => {
   }
 };
 
+const refresh = async (req, res) => {
+  try {
+    const tokenPlain = req.cookies.refreshToken;
+    if (!tokenPlain) return res.status(401).json({ message: 'No refresh token' });
+
+    const tokenHash = hashToken(tokenPlain);
+
+    const q = `
+      SELECT rt.id, rt.user_id, rt.expires_at, u.email, u.role_id
+      FROM refresh_tokens rt
+      JOIN users u ON u.id = rt.user_id
+      WHERE rt.token_hash = $1 AND rt.revoked = false AND (rt.expires_at IS NULL OR rt.expires_at > now())
+      LIMIT 1
+    `;
+    const found = (await pool.query(q, [tokenHash])).rows[0];
+    if (!found) return res.status(401).json({ message: 'Invalid refresh token' });
+
+    // revoke old
+    await pool.query('UPDATE refresh_tokens SET revoked = true WHERE id = $1', [found.id]);
+
+    // issue new tokens
+    const accessToken = generateAccessToken({
+      sub: found.user_id,
+      email: found.email,
+      role: found.role_id
+    });
+
+    const newRefreshPlain = generateRefreshTokenPlain();
+    const newHash = hashToken(newRefreshPlain);
+    const expiresAt = refreshTokenExpiryDate();
+
+    await pool.query(
+      'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1,$2,$3)',
+      [found.user_id, newHash, expiresAt]
+    );
+
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('refreshToken', newRefreshPlain, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      expires: new Date(expiresAt)
+    });
+
+    return res.json({ accessToken });
+  } catch (e) {
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+    const tokenPlain = req.cookies.refreshToken;
+    if (tokenPlain) {
+      const tokenHash = hashToken(tokenPlain);
+      await pool.query('UPDATE refresh_tokens SET revoked = true WHERE token_hash = $1', [tokenHash]);
+    }
+    // res.clearCookie('refreshToken'); //заміна на ->
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: process.env.NODE_ENV === 'production'
+    });
+
+    return res.json({ ok: true });
+  } catch {
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
-  login
+  login,
+  refresh,
+  logout,
 };
