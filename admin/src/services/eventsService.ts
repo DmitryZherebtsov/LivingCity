@@ -33,14 +33,10 @@ export interface Stats {
   growthRateChange: string;   
 }
 
-export const fetchEvents = async (): Promise<Event[]> => {
-  try {
-    const res = await api.get<Event[]>("/api/events");
-    return res.data;
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    return [];
-  }
+
+export const fetchEvents = async () => {
+  const res = await api.get("/api/events");
+  return res.data;
 };
 
 export async function deleteEvent(id: number) {

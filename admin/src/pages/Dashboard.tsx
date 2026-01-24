@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchEvents, calculateStats } from '@/services/eventsService';
 import type { Event, Stats } from '@/services/eventsService'; // Імпорт типів
+import { useAuth } from "@/context/AuthContext";
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats>({
@@ -23,6 +24,7 @@ export default function Dashboard() {
   const [events, setEvents] = useState<Event[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const { isLoading, user } = useAuth();
 
   const filteredEvents = useMemo(() => {
   const query = searchQuery.trim().toLowerCase();
@@ -50,16 +52,20 @@ export default function Dashboard() {
 
 
 
-  useEffect(() => {
-    const loadData = async () => {
-      const fetchedEvents = await fetchEvents();
-      const calculatedStats = calculateStats(fetchedEvents);
-      setEvents(fetchedEvents);
-      setStats(calculatedStats);
-      setLoading(false);
-    };
-    loadData();
-  }, []);
+useEffect(() => {
+  if (isLoading) return;
+
+  const loadData = async () => {
+    const fetchedEvents = await fetchEvents();
+    setEvents(fetchedEvents);
+    setStats(calculateStats(fetchedEvents));
+    setLoading(false);
+  };
+
+  loadData();
+}, [isLoading]);
+
+
 
   if (loading) {
     return <div>Loading...</div>;

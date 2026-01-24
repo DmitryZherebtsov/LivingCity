@@ -29,18 +29,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const s = localStorage.getItem(SESSION_KEY);
-    if (s) {
-      try {
-        const parsed = JSON.parse(s) as UserProfile;
-        setUser(parsed);
-      } catch {
-        localStorage.removeItem(SESSION_KEY);
+
+useEffect(() => {
+  const bootstrapAuth = async () => {
+    try {
+      const session = localStorage.getItem(SESSION_KEY);
+      if (session) {
+        setUser(JSON.parse(session));
       }
+
+      const res = await api.post("/auth/refresh", {});
+      const token = res.data?.accessToken;
+      if (!token) throw new Error("No token");
+
+      setAccessToken(token);
+      setAuthToken(token); 
+
+    } catch (e) {
+      setUser(null);
+      setAuthToken(null);
+      localStorage.removeItem(SESSION_KEY);
+    } finally {
+      setIsLoading(false); 
     }
-    setIsLoading(false);
-  }, []);
+  };
+
+  bootstrapAuth();
+}, []);
+
 
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
     try {
@@ -86,16 +102,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async (): Promise<void> => {
-    try {
-      await api.post("/auth/logout");
-    } catch {
-      // ignore network errors on logout
-    }
-    setUser(null);
+    await api.post("/auth/logout").catch(() => {});
     setAccessToken(null);
     setAuthToken(null);
+    setUser(null);
     localStorage.removeItem(SESSION_KEY);
   };
+
 
   const getAccessToken = () => accessToken;
 

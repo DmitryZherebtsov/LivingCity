@@ -99,20 +99,18 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-3">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary mb-4">
             <MapPin className="w-7 h-7 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">EventMap</h1>
-          <p className="text-muted-foreground mt-1">Event Management Admin Panel</p>
+          <h1 className="text-2xl font-bold text-foreground">Living City</h1>
+          <p className="text-muted-foreground mt-1">Event Management Admin/Moderator Panel</p>
         </div>
 
         <Card className="border-border/50 shadow-xl">
@@ -236,9 +234,9 @@ export default function Auth() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
+        {/* <p className="text-center text-xs text-muted-foreground mt-6">
           By continuing, you agree to our Terms of Service and Privacy Policy
-        </p>
+        </p> */}
       </div>
     </div>
   );

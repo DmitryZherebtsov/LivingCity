@@ -24,7 +24,7 @@ const login = async (req, res) => {
       roleName: user.role_name
     };
 
-    const accessToken = generateAccessToken(payload);
+    const accessToken = generateAccessToken(payload); 
 
     // refresh token
     const refreshTokenPlain = generateRefreshTokenPlain();
@@ -63,9 +63,10 @@ const refresh = async (req, res) => {
     const tokenHash = hashToken(tokenPlain);
 
     const q = `
-      SELECT rt.id, rt.user_id, rt.expires_at, u.email, u.role_id
+      SELECT rt.id, rt.user_id, rt.expires_at, u.email, u.role_id, r.name AS role_name
       FROM refresh_tokens rt
       JOIN users u ON u.id = rt.user_id
+      JOIN roles r ON r.id = u.role_id
       WHERE rt.token_hash = $1 AND rt.revoked = false AND (rt.expires_at IS NULL OR rt.expires_at > now())
       LIMIT 1
     `;
@@ -75,12 +76,12 @@ const refresh = async (req, res) => {
     // revoke old
     await pool.query('UPDATE refresh_tokens SET revoked = true WHERE id = $1', [found.id]);
 
-    // issue new tokens
     const accessToken = generateAccessToken({
       sub: found.user_id,
       email: found.email,
-      role: found.role_id
+      roleName: found.role_name
     });
+
 
     const newRefreshPlain = generateRefreshTokenPlain();
     const newHash = hashToken(newRefreshPlain);
@@ -112,7 +113,7 @@ const logout = async (req, res) => {
       const tokenHash = hashToken(tokenPlain);
       await pool.query('UPDATE refresh_tokens SET revoked = true WHERE token_hash = $1', [tokenHash]);
     }
-    // res.clearCookie('refreshToken'); //заміна на ->
+    // res.clearCookie('refreshToken'); //заміна на 
     res.clearCookie('refreshToken', {
         httpOnly: true,
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
