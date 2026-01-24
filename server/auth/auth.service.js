@@ -2,10 +2,18 @@ const pool = require('../config/dbConfig');
 const bcrypt = require('bcrypt');
 const { hashToken, refreshTokenExpiryDate } = require('../utils/tokenUtil');
 
-async function findUserByEmail(email) {
-  const res = await pool.query('SELECT id, email, password_hash, role_id, is_active FROM users WHERE email = $1 LIMIT 1', [email]);
+const findUserByEmail = async (email) => {
+  const q = `
+    SELECT u.*, r.name AS role_name
+    FROM users u
+    JOIN roles r ON r.id = u.role_id
+    WHERE u.email = $1
+    LIMIT 1
+  `;
+  const res = await pool.query(q, [email]);
   return res.rows[0];
-}
+};
+
 
 async function saveRefreshToken(userId, refreshTokenPlain, ip = null, userAgent = null) {
   const tokenHash = hashToken(refreshTokenPlain);
