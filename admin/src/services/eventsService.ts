@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { api } from './api';
+import api from "@/lib/api";
 
 export interface Event {
   id: number;
@@ -35,10 +35,10 @@ export interface Stats {
 
 export const fetchEvents = async (): Promise<Event[]> => {
   try {
-    const response = await axios.get<Event[]>('http://localhost:3000/api/events');
-    return response.data;
+    const res = await api.get<Event[]>("/api/events");
+    return res.data;
   } catch (error) {
-    console.error('Error fetching events:', error);
+    console.error("Error fetching events:", error);
     return [];
   }
 };

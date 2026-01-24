@@ -4,11 +4,11 @@ const { hashToken, refreshTokenExpiryDate } = require('../utils/tokenUtil');
 
 const findUserByEmail = async (email) => {
   const q = `
-    SELECT u.*, r.name AS role_name
+    SELECT u.id, u.email, u.name, u.role_id, r.name AS role_name, u.password_hash, u.is_active
     FROM users u
     JOIN roles r ON r.id = u.role_id
     WHERE u.email = $1
-    LIMIT 1
+    LIMIT 1;
   `;
   const res = await pool.query(q, [email]);
   return res.rows[0];

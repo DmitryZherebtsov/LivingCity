@@ -41,8 +41,14 @@ const login = async (req, res) => {
 
     return res.json({
       accessToken,
-      user: { id: user.id, email: user.email, role_id: user.role_id }
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role_name
+      }
     });
+
   } catch (err) {
     console.error('Login error', err);
     return res.status(500).json({ error: 'Server error' });

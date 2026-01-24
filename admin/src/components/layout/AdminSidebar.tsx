@@ -10,6 +10,7 @@ import {
   Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { UserMenu } from "./UserMenu";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -72,6 +73,7 @@ export function AdminSidebar() {
           </span>
           <span className="absolute top-2 left-6 w-2 h-2 bg-destructive rounded-full" />
         </button>
+        <UserMenu />
       </div>
     </aside>
   );
