@@ -19,10 +19,11 @@ const login = async (req, res) => {
 
     // access token creat
     const payload = {
-        sub: user.id,
-        email: user.email,
-        role: user.role_id
+      sub: user.id,
+      email: user.email,
+      roleName: user.role_name
     };
+
     const accessToken = generateAccessToken(payload);
 
     // refresh token
