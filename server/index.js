@@ -4,7 +4,9 @@ const cors = require('cors');
 const pool = require('./config/dbConfig');
 const eventRoutes = require('./routes/eventRoutes');
 const cookieParser = require('cookie-parser');
+
 const authRoutes = require('./auth/auth.routes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -28,8 +30,8 @@ app.use(cookieParser());
 
 // mount auth routes
 app.use('/auth', authRoutes);
-
 app.use('/api/events', eventRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/', (req, res) => {
   res.send('LivingCity API is running');

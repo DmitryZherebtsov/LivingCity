@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { fetchEvents, Event, deleteEvent } from "@/services/eventsService";
 import { EditEventModal } from "@/components/forms/EditEventModal";
+import api from "@/lib/api";
 
 
 const statusStyles = {
@@ -82,8 +83,8 @@ export default function Events() {
     if (!confirm("Are you sure you want to delete this event?")) return;
 
     try {
-      await deleteEvent(id);
-      setEvents(prev => prev.filter(event => event.id !== id));
+      const res = await api.delete(`/api/events/${id}`);
+      return res.data;
     } catch (error) {
       console.error(error);
       alert("Failed to delete event");

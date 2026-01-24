@@ -76,6 +76,7 @@ const refresh = async (req, res) => {
     // revoke old
     await pool.query('UPDATE refresh_tokens SET revoked = true WHERE id = $1', [found.id]);
 
+    // issue new access token with roleName (string)
     const accessToken = generateAccessToken({
       sub: found.user_id,
       email: found.email,
