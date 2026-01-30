@@ -54,7 +54,6 @@ export default function Users() {
         const data: UserDTO[] = await fetchUsers();
         if (!mounted) return;
 
-        // Map API shape -> LocalUser
         const mapped = data.map((u) => {
           const name = u.name ?? u.email ?? "Unnamed";
           const role = (u.role_name ?? "User").charAt(0).toUpperCase() + (u.role_name ?? "user").slice(1);
@@ -65,7 +64,7 @@ export default function Users() {
             email: u.email,
             role,
             status: isActive ? "active" : "inactive",
-            events: 0, // API currently doesn't return event count; set 0 or compute if available
+            events: 0,
             joined: u.created_at ? new Date(u.created_at).toLocaleDateString() : "—",
           } as LocalUser;
         });
