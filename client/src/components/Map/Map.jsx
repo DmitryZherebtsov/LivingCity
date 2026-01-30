@@ -26,14 +26,14 @@ const Map = () => {
     fetchEvents();
   }, []);
 
-  // 2. Initialize the Map
+  // 2. Initialization of Map
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/dmitryzh/cmgdrdox900du01sa2oenbhr8',
-      center: [10, 50], // Europe
+      center: [10, 50], // europe by default
       zoom: 3.5,
       pitch: 0,
       bearing: 0,
@@ -66,15 +66,13 @@ const Map = () => {
     return () => map.remove();
   }, []);
 
-  // 3. Add markers whenever events data is loaded/updated
   useEffect(() => {
     if (!mapRef.current || events.length === 0) return;
 
     events.forEach((event) => {
-      // Skip events with invalid coordinates (like the 0,0 example)
       if (parseFloat(event.lat) === 0 && parseFloat(event.lon) === 0) return;
 
-      // Create a popup with event details
+
       const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
         <h3>${event.title}</h3>
         <p><strong>${event.event_type}</strong></p>
@@ -82,8 +80,7 @@ const Map = () => {
         <a href="${event.url}" target="_blank" rel="noopener noreferrer">More Info</a>
       `);
 
-      // Add marker to the map
-      new mapboxgl.Marker({ color: '#ff4d4d' }) // You can customize marker color based on event_type
+      new mapboxgl.Marker({ color: '#ff4d4d' })
         .setLngLat([parseFloat(event.lon), parseFloat(event.lat)])
         .setPopup(popup)
         .addTo(mapRef.current);
