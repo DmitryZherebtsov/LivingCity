@@ -33,7 +33,7 @@ const Map = () => {
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/dmitryzh/cmgdrdox900du01sa2oenbhr8',
-      center: [10, 50], // europe by default
+      center: [10, 50], // default position Europe
       zoom: 3.5,
       pitch: 0,
       bearing: 0,
