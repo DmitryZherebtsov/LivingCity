@@ -27,8 +27,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 /* ---------- ROUTES ---------- */
-
-// mount auth routes
 app.use('/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/users', userRoutes);
@@ -39,14 +37,14 @@ app.get('/', (req, res) => {
 
 /* ---------- DB CHECK ---------- */
 pool.query('SELECT 1')
-  .then(() => console.log('✅ PostgreSQL connected'))
+  .then(() => console.log('PostgreSQL connected'))
   .catch(err => {
-    console.error('❌ DB connection error', err);
+    console.error('DB connection error', err);
     process.exit(1);
   });
 
 /* ---------- SERVER ---------- */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

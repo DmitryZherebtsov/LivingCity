@@ -1,4 +1,3 @@
-//accept list of allowed role names or role ids
 function requireRole(allowed = []) {
   return (req, res, next) => {
     if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
