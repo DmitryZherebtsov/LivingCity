@@ -5,7 +5,7 @@ const pool = require('./config/dbConfig');
 const eventRoutes = require('./routes/eventRoutes');
 const cookieParser = require('cookie-parser');
 
-const authRoutes = require('./auth/auth.routes');
+const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 const app = express();
@@ -44,7 +44,7 @@ pool.query('SELECT 1')
   });
 
 /* ---------- SERVER ---------- */
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000 ;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

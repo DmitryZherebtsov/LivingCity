@@ -61,20 +61,18 @@ useEffect(() => {
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
     try {
       const res = await api.post("/auth/login", { email, password });
-      // backend returns { accessToken, user }
       const { accessToken: token, user: profile } = res.data;
       if (!token || !profile) {
         return { error: "Invalid server response" };
       }
-      // keep token in memory and set global header
+      // keep token in state
       setAccessToken(token);
       setAuthToken(token);
-      // persist minimal user profile (no tokens) for UI
+      // user profile 
       setUser(profile);
       localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
       return {};
     } catch (err: any) {
-      // axios error handling
       if (err.response?.data?.error || err.response?.data?.message) {
         return { error: err.response.data.error || err.response.data.message };
       }
@@ -84,7 +82,6 @@ useEffect(() => {
 
   const register = async (email: string, password: string, name?: string): Promise<{ error?: string }> => {
     try {
-      // If your backend has /auth/register; if not, remove or implement endpoint
       const res = await api.post("/auth/register", { email, password, name });
       const { accessToken: token, user: profile } = res.data;
       if (!token || !profile) return { error: "Invalid server response" };

@@ -7,7 +7,7 @@ const findUserByEmail = async (email) => {
     SELECT u.id, u.email, u.name, u.role_id, r.name AS role_name, u.password_hash, u.is_active
     FROM users u
     JOIN roles r ON r.id = u.role_id
-    WHERE u.email = $1
+    WHERE LOWER(u.email) = LOWER($1)
     LIMIT 1;
   `;
   const res = await pool.query(q, [email]);
@@ -30,10 +30,24 @@ const revokeAllUserRefreshTokens = async (userId) => {
   );
 };
 
+const createUser = async ({ email, name, passwordHash }) => {
+  const q = `
+    INSERT INTO users (email, name, password_hash, role_id, is_active)
+    VALUES ($1, $2, $3,
+      (SELECT id FROM roles WHERE name = 'moderator2'),
+      true
+    )
+    RETURNING id, email, name, role_id
+  `;
+  const res = await pool.query(q, [email, name, passwordHash]);
+  return res.rows[0];
+};
+
 
 module.exports = {
   findUserByEmail,
   saveRefreshToken,
-  revokeAllUserRefreshTokens
+  revokeAllUserRefreshTokens,
+  createUser
 };
 

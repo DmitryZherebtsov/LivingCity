@@ -1,6 +1,5 @@
 const eventModel = require('../models/eventModel');
 
-// Simple input validation helper
 const validateCoords = (lon, lat) => {
   if (lon === undefined || lat === undefined) return false;
   const ln = Number(lon), la = Number(lat);

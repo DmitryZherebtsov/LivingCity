@@ -30,7 +30,7 @@ const login = async (req, res) => {
     const refreshTokenPlain = generateRefreshTokenPlain();
     const saved = await authService.saveRefreshToken(user.id, refreshTokenPlain, req.ip, req.get('User-Agent') || null);
 
-    // Seting refresh token as httpOnly cookie
+    // refresh token as httpOnly cookie
     const isProd = process.env.NODE_ENV === 'production';
     res.cookie('refreshToken', refreshTokenPlain, {
       httpOnly: true,
@@ -76,7 +76,7 @@ const refresh = async (req, res) => {
     // revoke old
     await pool.query('UPDATE refresh_tokens SET revoked = true WHERE id = $1', [found.id]);
 
-    // issue new access token with roleName (string)
+    // issue new access token with roleName
     const accessToken = generateAccessToken({
       sub: found.user_id,
       email: found.email,
@@ -127,8 +127,75 @@ const logout = async (req, res) => {
   }
 };
 
+
+
+const register = async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const exists = await authService.findUserByEmail(email);
+    if (exists) {
+      return res.status(409).json({ error: 'Email already in use' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    const user = await authService.createUser({
+      email,
+      name,
+      passwordHash
+    });
+
+    await authService.revokeAllUserRefreshTokens(user.id);
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      roleName: 'viewer'
+    };
+    const accessToken = generateAccessToken(payload);
+
+    const refreshPlain = generateRefreshTokenPlain();
+    const saved = await authService.saveRefreshToken(
+      user.id,
+      refreshPlain,
+      req.ip,
+      req.get('User-Agent') || null
+    );
+
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('refreshToken', refreshPlain, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      expires: new Date(saved.expires_at)
+    });
+
+    return res.status(201).json({
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: 'viewer'
+      }
+    });
+
+  } catch (err) {
+    console.error('Register error', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+
 module.exports = {
   login,
   refresh,
   logout,
+  register
 };

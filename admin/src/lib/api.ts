@@ -16,8 +16,6 @@ export function setAuthToken(token: string | null) {
   }
 }
 
-
-
 let isRefreshing = false;
 let failedQueue: any[] = [];
 
@@ -35,11 +33,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status !== 401) {
+    if (originalRequest.url?.includes("/auth/refresh")) {
       return Promise.reject(error);
     }
 
-    if (originalRequest._retry) {
+    if (error.response?.status !== 401) {
       return Promise.reject(error);
     }
 

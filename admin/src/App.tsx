@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
+
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Events from "./pages/Events";
@@ -20,33 +21,39 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+
+      <BrowserRouter> 
+
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+
           <Routes>
+
             <Route path="/auth" element={<Auth />} />
+
             <Route
-              path="/*"
               element={
                 <ProtectedRoute>
-                  <AdminLayout>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/events" element={<Events />} />
-                      <Route path="/map" element={<MapView />} />
-                      <Route path="/analytics" element={<Analytics />} />
-                      <Route path="/users" element={<Users />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </AdminLayout>
+                  <AdminLayout />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route path="/" element={<Index />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/map" element={<MapView />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+
+      </BrowserRouter>
+
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { MapPin, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,20 +24,38 @@ const registerSchema = z.object({
   path: ["confirmPassword"],
 });
 
+// =======================
 export default function Auth() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
+  const { login, register, user, isLoading } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
 
-  const { login, register } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  useEffect(() => {
+    if (location.state?.reason === "unauthorized") {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to access the dashboard",
+        variant: "destructive",
+      });
+    }
+  }, [location.state, toast]);
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      navigate("/", { replace: true });
+    }
+  }, [isLoading, user, navigate]);
 
   const resetForm = () => {
     setEmail("");
@@ -46,14 +64,6 @@ export default function Auth() {
     setName("");
     setErrors({});
   };
-
-  const { user, isLoading } = useAuth();
-
-  useEffect(() => {
-    if (!isLoading && user) {
-      navigate("/", { replace: true });
-    }
-  }, [isLoading, user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +88,7 @@ export default function Auth() {
           toast({ title: "Login failed", description: error, variant: "destructive" });
         } else {
           toast({ title: "Welcome back!", description: "You've successfully logged in." });
-          navigate("/");
+          navigate("/events");
         }
       } else {
         const result = registerSchema.safeParse({ name, email, password, confirmPassword });
@@ -93,11 +103,15 @@ export default function Auth() {
         }
 
         const { error } = await register(email, password, name);
-        if (error) {
-          toast({ title: "Registration failed", description: error, variant: "destructive" });
-        } else {
-          toast({ title: "Account created!", description: "Welcome to EventMap." });
-          navigate("/");
+
+        if (!error) {
+          toast({
+            title: "Account created",
+            description: "You can now sign in.",
+          });
+
+          setIsLogin(true);
+          resetForm();
         }
       }
     } finally {
@@ -243,7 +257,6 @@ export default function Auth() {
         </Card>
 
         {/* <p className="text-center text-xs text-muted-foreground mt-6">
-          By continuing, you agree to our Terms of Service and Privacy Policy
         </p> */}
       </div>
     </div>
