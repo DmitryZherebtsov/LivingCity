@@ -33,15 +33,19 @@ const revokeAllUserRefreshTokens = async (userId) => {
 const createUser = async ({ email, name, passwordHash }) => {
   const q = `
     INSERT INTO users (email, name, password_hash, role_id, is_active)
-    VALUES ($1, $2, $3,
-      (SELECT id FROM roles WHERE name = 'moderator2'),
+    VALUES (
+      $1,
+      $2,
+      $3,
+      (SELECT id FROM roles WHERE name = 'moderator' LIMIT 1),
       true
     )
-    RETURNING id, email, name, role_id
+    RETURNING id, email, name, role_id;
   `;
   const res = await pool.query(q, [email, name, passwordHash]);
   return res.rows[0];
 };
+
 
 
 module.exports = {

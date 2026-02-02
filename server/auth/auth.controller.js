@@ -129,6 +129,68 @@ const logout = async (req, res) => {
 
 
 
+// const register = async (req, res) => {
+//   try {
+//     const { email, password, name } = req.body;
+
+//     if (!email || !password || !name) {
+//       return res.status(400).json({ error: 'Missing required fields' });
+//     }
+
+//     const exists = await authService.findUserByEmail(email);
+//     if (exists) {
+//       return res.status(409).json({ error: 'Email already in use' });
+//     }
+
+//     const passwordHash = await bcrypt.hash(password, 12);
+
+//     const user = await authService.createUser({
+//       email,
+//       name,
+//       passwordHash
+//     });
+
+//     await authService.revokeAllUserRefreshTokens(user.id);
+
+//     const payload = {
+//       sub: user.id,
+//       email: user.email,
+//       roleName: 'viewer'
+//     };
+//     const accessToken = generateAccessToken(payload);
+
+//     const refreshPlain = generateRefreshTokenPlain();
+//     const saved = await authService.saveRefreshToken(
+//       user.id,
+//       refreshPlain,
+//       req.ip,
+//       req.get('User-Agent') || null
+//     );
+
+//     const isProd = process.env.NODE_ENV === 'production';
+//     res.cookie('refreshToken', refreshPlain, {
+//       httpOnly: true,
+//       secure: isProd,
+//       sameSite: isProd ? 'none' : 'lax',
+//       expires: new Date(saved.expires_at)
+//     });
+
+//     return res.status(201).json({
+//       accessToken,
+//       user: {
+//         id: user.id,
+//         email: user.email,
+//         name: user.name,
+//         role: 'viewer'
+//       }
+//     });
+
+//   } catch (err) {
+//     console.error('Register error', err);
+//     return res.status(500).json({ error: 'Server error' });
+//   }
+// };
+
 const register = async (req, res) => {
   try {
     const { email, password, name } = req.body;
@@ -150,39 +212,8 @@ const register = async (req, res) => {
       passwordHash
     });
 
-    await authService.revokeAllUserRefreshTokens(user.id);
-
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      roleName: 'viewer'
-    };
-    const accessToken = generateAccessToken(payload);
-
-    const refreshPlain = generateRefreshTokenPlain();
-    const saved = await authService.saveRefreshToken(
-      user.id,
-      refreshPlain,
-      req.ip,
-      req.get('User-Agent') || null
-    );
-
-    const isProd = process.env.NODE_ENV === 'production';
-    res.cookie('refreshToken', refreshPlain, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
-      expires: new Date(saved.expires_at)
-    });
-
     return res.status(201).json({
-      accessToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: 'viewer'
-      }
+      message: 'Account created'
     });
 
   } catch (err) {
@@ -190,7 +221,6 @@ const register = async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 };
-
 
 
 module.exports = {

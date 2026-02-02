@@ -81,22 +81,30 @@ useEffect(() => {
   };
 
   const register = async (email: string, password: string, name?: string): Promise<{ error?: string }> => {
-    try {
-      const res = await api.post("/auth/register", { email, password, name });
-      const { accessToken: token, user: profile } = res.data;
-      if (!token || !profile) return { error: "Invalid server response" };
+  try {
+    const res = await api.post("/auth/register", { email, password, name });
+
+    const token = res.data?.accessToken;
+    const profile = res.data?.user;
+
+    if (token && profile) {
       setAccessToken(token);
       setAuthToken(token);
       setUser(profile);
       localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
       return {};
-    } catch (err: any) {
-      if (err.response?.data?.error || err.response?.data?.message) {
-        return { error: err.response.data.error || err.response.data.message };
-      }
-      return { error: "Network error" };
     }
-  };
+
+    return {};
+
+  } catch (err: any) {
+    if (err.response?.data?.error || err.response?.data?.message) {
+      return { error: err.response.data.error || err.response.data.message };
+    }
+    return { error: "Network error" };
+  }
+};
+
 
   const logout = async (): Promise<void> => {
     await api.post("/auth/logout").catch(() => {});
