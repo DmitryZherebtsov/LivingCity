@@ -7,9 +7,11 @@ function requireAuth(req, res, next) {
   }
 
   const token = authHeader.split(' ')[1];
-
   try {
-    const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const payload = jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET
+    );
 
     req.user = {
       id: payload.sub,
@@ -17,10 +19,11 @@ function requireAuth(req, res, next) {
       roleName: payload.roleName
     };
 
-
     next();
-  } catch {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+  } catch (err) {
+    return res.status(401).json(
+      { message:'Invalid or expired token' }
+    );
   }
 }
 
