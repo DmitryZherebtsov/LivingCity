@@ -27,3 +27,7 @@ body,
   padding: 15px;
   border-radius: 8px;
 }
+
+.map-root { height: 100%; width: 100%; }
+.map-container { position:absolute; inset:0; }
+.marker { display:block; }

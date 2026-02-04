@@ -1,0 +1,31 @@
+.sidebar-root {
+padding: 20px;
+display: flex;
+flex-direction: column;
+}
+.sidebar-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 14px;
+}
+.sidebar-header h3 { margin:0; color: #f8fafc; font-size:1.25rem;}
+.sidebar-counter {
+font-size: 0.9rem;
+color: #9fb3c8;
+}
+.sidebar-footer {
+    margin-top: 12px;
+    padding-top: 0;
+}
+.btn-reset {
+background: transparent;
+border: 1px solid rgba(255,255,255,0.08);
+color: #e6eef8;
+padding: 8px 12px;
+border-radius: 8px;
+cursor: pointer;
+}
+.btn-reset:hover { 
+    background: rgba(255,255,255,0.02); 
+}

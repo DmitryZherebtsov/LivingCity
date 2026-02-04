@@ -1,12 +1,12 @@
-import Map from "./components/Map/Map"
+import { Routes, Route } from "react-router-dom";
+import MapPage from "./pages/Map/MapPage";
 
 function App() {
-
   return (
-    <>
-      <Map />
-    </>
-  )
+    <Routes>
+      <Route path="/" element={<MapPage />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
