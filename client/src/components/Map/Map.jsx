@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
@@ -6,12 +7,12 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import './Map.css';
 
+// Map Component init
 const Map = () => {
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const [events, setEvents] = useState([]);
 
-  // 1. Fetch event data from the API
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -26,14 +27,13 @@ const Map = () => {
     fetchEvents();
   }, []);
 
-  // 2. Initialization of Map
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/dmitryzh/cmgdrdox900du01sa2oenbhr8',
-      center: [10, 50], // default position Europe
+      center: [10, 50], // default position I set Europe
       zoom: 3.5,
       pitch: 0,
       bearing: 0,
