@@ -1,31 +1,64 @@
+/* Sidebar.css */
+
+:root {
+  --header-height: 64px;
+  --sidebar-width: 20vw;
+  --sidebar-min-width: 260px;
+}
+
 .sidebar-root {
-padding: 20px;
-display: flex;
-flex-direction: column;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  height: calc(100vh - var(--header-height));
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-min-width);
+
+  background: rgba(10, 15, 25, 0.9);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255,255,255,0.08);
+
+  z-index: 40;
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-.sidebar-header {
-display: flex;
-align-items: center;
-justify-content: space-between;
-margin-bottom: 14px;
+
+/* контейнер для search */
+.sidebar-search {
+  width: 100%;
 }
-.sidebar-header h3 { margin:0; color: #f8fafc; font-size:1.25rem;}
-.sidebar-counter {
-font-size: 0.9rem;
-color: #9fb3c8;
+
+/* Mapbox Geocoder styling */
+.sidebar-root .mapboxgl-ctrl-geocoder {
+  width: 100%;
+  max-width: none;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: none;
 }
-.sidebar-footer {
-    margin-top: 12px;
-    padding-top: 0;
+
+.sidebar-root .mapboxgl-ctrl-geocoder input {
+  color: #f8fafc;
+  background: transparent;
 }
-.btn-reset {
-background: transparent;
-border: 1px solid rgba(255,255,255,0.08);
-color: #e6eef8;
-padding: 8px 12px;
-border-radius: 8px;
-cursor: pointer;
+
+.sidebar-root .mapboxgl-ctrl-geocoder input::placeholder {
+  color: #94a3b8;
 }
-.btn-reset:hover { 
-    background: rgba(255,255,255,0.02); 
+
+.sidebar-root .mapboxgl-ctrl-geocoder svg {
+  fill: #94a3b8;
+}
+
+/* results dropdown */
+.sidebar-root .suggestions {
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-root .suggestions li:hover {
+  background: rgba(255,255,255,0.06);
 }

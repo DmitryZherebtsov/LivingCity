@@ -18,10 +18,9 @@ body,
 
 .map-container {
   width: 100%;
-  height: 100vh; /* Adjust as needed */
+  height: 100vh;
 }
 
-/* Optional: styling for the popups */
 .mapboxgl-popup-content {
   color: #333;
   padding: 15px;

@@ -1,11 +1,17 @@
 import { Routes, Route } from "react-router-dom";
 import MapPage from "./pages/Map/MapPage";
+import Header from "./components/Header/Header";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<MapPage />} />
-    </Routes>
+    <>
+    
+      <Header />
+      <Routes>
+        <Route path="/" element={<MapPage />} />
+      </Routes>
+
+    </>
   );
 }
 

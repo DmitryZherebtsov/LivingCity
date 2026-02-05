@@ -1,13 +1,13 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+// import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import './Map.css';
 
-const Map = () => {
+const Map = ({ onMapReady }) => {
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const [events, setEvents] = useState([]);
@@ -41,26 +41,33 @@ const Map = () => {
 
     mapRef.current = map;
 
-    const geocoder = new MapboxGeocoder({
-      accessToken: mapboxgl.accessToken,
-      mapboxgl,
-      marker: false,
-      placeholder: 'Search for a city',
-      types: 'place',
-    });
+    if (typeof onMapReady === 'function') {
+      onMapReady(map);
+    }
+    // const geocoder = new MapboxGeocoder({
+    //   accessToken: mapboxgl.accessToken,
+    //   mapboxgl,
+    //   marker: false,
+    //   placeholder: 'Search for a city',
+    //   types: 'place',
+    // });
 
-    map.addControl(geocoder, 'top-left');
+    // map.addControl(geocoder, 'bottom-right'); // Search Bar
 
-    geocoder.on('result', (e) => {
-      const [lng, lat] = e.result.center;
-      map.flyTo({
-        center: [lng, lat],
-        zoom: 11,
-        speed: 1.5,
-        curve: 1.4,
-        essential: true,
-      });
-    });
+    // geocoder.on('result', (e) => {
+    //   const [lng, lat] = e.result.center;
+    //   map.flyTo({
+    //     center: [lng, lat],
+    //     zoom: 11,
+    //     speed: 1.5,
+    //     curve: 1.4,
+    //     essential: true,
+    //   });
+    // });
+
+    // if (onMapReady) {
+    //   onMapReady(map);
+    // }
 
     return () => map.remove();
   }, []);
