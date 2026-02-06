@@ -33,7 +33,7 @@ const Map = ({ onMapReady, events = [] }) => {
 
     mapRef.current = map;
 
-    if (typeof onMapReady === 'function') {
+    if (typeof onMapReady === "function") {
       onMapReady(map);
     }
 

@@ -10,6 +10,8 @@ export default function MapPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
+  const [map, setMap] = useState(null);
+
   const filteredEvents = useMemo(() => {
   return events.filter((event) => {
     if (!event.start_time || !event.end_time) return false;
@@ -39,6 +41,7 @@ export default function MapPage() {
   return (
     <div className="map-page-root">
       <Sidebar
+        map={map}
         dateFrom={dateFrom}
         dateTo={dateTo}
         setDateFrom={setDateFrom}
@@ -48,7 +51,10 @@ export default function MapPage() {
         error={error}
       />
 
-      <Map events={filteredEvents} />
+      <Map 
+        events={filteredEvents}
+        onMapReady={setMap}
+      />
     </div>
   );
 }
