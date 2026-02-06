@@ -12,10 +12,32 @@ const Sidebar = ({
   setDateTo,
   events,
   loading,
-  error, }) => {
+  error,
+  selectedTypes,
+  setSelectedTypes,
+   }) => {
   const searchRef = useRef(null); // Reference to the search container div
   const geocoderRef = useRef(null); /// Reference to the geocoder instance
   const containerElRef = useRef(null); // Reference to the geocoder control element
+   
+  const EVENT_TYPES = [
+    "concert",
+    "sport",
+    "festival",
+    "conference",
+    "community",
+    "meeting",
+    "art",
+    "standup",
+    "other",
+  ];
+  const toggleType = (type) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type)
+        ? prev.filter((t) => t !== type)
+        : [...prev, type]
+    );
+  };
 
   useEffect(() => {
     if (!map || !searchRef.current) return; // wait until map and ref are ready
@@ -99,7 +121,24 @@ const Sidebar = ({
         </label>
       </div>
 
+      <div className="event-type-filters">
+        <span className="filters-title">Typ wydarzenia</span>
 
+        <div className="event-type-tags">
+          {EVENT_TYPES.map((type) => (
+            <button
+              key={type}
+              type="button"
+              className={`event-type-tag ${
+                selectedTypes.includes(type) ? "active" : ""
+              }`}
+              onClick={() => toggleType(type)}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+      </div>
       {/* <FilterMap events={events} loading={loading} error={error} /> */}
       
     </aside>

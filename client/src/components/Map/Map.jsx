@@ -10,6 +10,7 @@ const typeColors = {
   festival: '#4ae236',
   conference: '#8B5CF6',
   community: '#10B981',
+  art: 'faff0a',
   default: '#ff8c00',
 };
 
