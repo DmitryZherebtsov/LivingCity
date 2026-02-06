@@ -53,7 +53,7 @@ const Header = () => {
             <User size={18} />
           </button>
         </div>
-
+          
       </div>
     </header>
   );

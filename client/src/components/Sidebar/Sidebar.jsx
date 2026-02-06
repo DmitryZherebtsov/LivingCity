@@ -2,14 +2,24 @@ import './Sidebar.css';
 import { useEffect, useRef } from "react";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import mapboxgl from "mapbox-gl";
+import FilterMap from './FilterMap';
 
-const Sidebar = ({ map }) => {
+const Sidebar = ({ 
+  map, 
+  dateFrom,
+  dateTo,
+  setDateFrom,
+  setDateTo,
+  events,
+  loading,
+  error, }) => {
   const searchRef = useRef(null); // Reference to the search container div
   const geocoderRef = useRef(null); /// Reference to the geocoder instance
   const containerElRef = useRef(null); // Reference to the geocoder control element
 
   useEffect(() => {
     if (!map || !searchRef.current) return; // wait until map and ref are ready
+    if (geocoderRef.current) return;
 
     if (!mapboxgl.accessToken) {
       mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -64,8 +74,34 @@ const Sidebar = ({ map }) => {
   }, [map]);
 
   return (
-    <aside className="sidebar-root">
+    <aside className="sidebar-root" lang="pl">
       <div className="sidebar-search" ref={searchRef} />
+
+      <div className="date-filters">
+        <label>
+          Od:
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            language="pl"
+          />
+        </label>
+
+        <label>
+          Do:
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            language="pl"
+          />
+        </label>
+      </div>
+
+
+      {/* <FilterMap events={events} loading={loading} error={error} /> */}
+      
     </aside>
   );
 };

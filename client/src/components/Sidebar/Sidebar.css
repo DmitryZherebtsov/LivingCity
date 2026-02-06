@@ -58,3 +58,71 @@
 .sidebar-root .suggestions li:hover {
   background: rgba(255,255,255,0.06);
 }
+
+
+
+
+.date-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.date-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: #94a3b8;
+}
+
+.date-filters input[type="date"] {
+  width: 100%;
+  height: 40px;
+
+  padding: 0 12px;
+
+  background: rgba(255, 255, 255, 0.03);
+  color: #f8fafc;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+
+  font-size: 0.9rem;
+  font-family: inherit;
+
+  outline: none;
+
+}
+
+.date-filters input[type="date"]:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.date-filters input[type="date"]:focus {
+  border-color: rgba(96, 165, 250, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
+}
+
+.date-filters input[type="date"]:not(:valid) {
+  color: #64748b;
+}
+
+.date-filters input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.date-filters input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.9;
+}
+
+.date-filters input[type="date"]::-webkit-inner-spin-button {
+  display: none;
+}
+
