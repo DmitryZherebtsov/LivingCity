@@ -19,8 +19,9 @@ const Sidebar = ({ map }) => {
       accessToken: mapboxgl.accessToken,
       mapboxgl,
       marker: false,
-      placeholder: "Search for a city",
+      placeholder: "Szukaj miasta",
       types: "place",
+      language: "pl",
     });
 
     geocoderRef.current = geocoder;

@@ -1,9 +1,12 @@
-/* Sidebar.css */
-
 :root {
   --header-height: 64px;
   --sidebar-width: 20vw;
   --sidebar-min-width: 260px;
+}
+
+
+.sidebar-search {
+  width: 100%;
 }
 
 .sidebar-root {
@@ -25,24 +28,19 @@
   flex-direction: column;
   gap: 12px;
 }
-
-/* контейнер для search */
-.sidebar-search {
-  width: 100%;
-}
-
-/* Mapbox Geocoder styling */
 .sidebar-root .mapboxgl-ctrl-geocoder {
   width: 100%;
   max-width: none;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.08);
   box-shadow: none;
+  border-radius: 10px;
 }
 
 .sidebar-root .mapboxgl-ctrl-geocoder input {
   color: #f8fafc;
   background: transparent;
+  font-size: 0.95rem;
 }
 
 .sidebar-root .mapboxgl-ctrl-geocoder input::placeholder {
@@ -52,8 +50,6 @@
 .sidebar-root .mapboxgl-ctrl-geocoder svg {
   fill: #94a3b8;
 }
-
-/* results dropdown */
 .sidebar-root .suggestions {
   background: rgba(15, 23, 42, 0.98);
   border: 1px solid rgba(255,255,255,0.08);
