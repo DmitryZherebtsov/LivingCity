@@ -55,7 +55,7 @@ const uploadImages = async (req, res) => {
 
       const record = await eventImageModel.createImage({
         event_id: eventId,
-        image_url: publicUrl,
+        filename: publicUrl,
         mime: file.mimetype,
         size: fs.statSync(outPath).size,
       });
@@ -90,8 +90,8 @@ const deleteImage = async (req, res) => {
     const img = await eventImageModel.removeImage(id);
     if (!img) return res.status(404).json({ error: 'Not found' });
 
-    const filepath = path.join(__dirname, '..', img.image_url);
-    const absPath = path.join(__dirname, '..', img.image_url);
+    const filepath = path.join(__dirname, '..', img.filename);
+    const absPath = path.join(__dirname, '..', img.filename);
     if (fs.existsSync(absPath)) {
       try { fs.unlinkSync(absPath); } catch (e) { console.warn('failed to unlink', absPath, e); }
     }

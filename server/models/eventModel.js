@@ -37,16 +37,17 @@ const createEvent = async (data) => {
 // Read list with pagination, filters, and optional nearby search (lat, lon, radius_km)
 const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km } = {}) => {
   const params = [];
+  // when we alias events as "e", use e.column in WHERE
   let where = 'WHERE 1=1';
 
   if (event_type) {
     params.push(event_type);
-    where += ` AND event_type = $${params.length}`;
+    where += ` AND e.event_type = $${params.length}`;
   }
 
   if (qtext) {
     params.push(`%${qtext}%`);
-    where += ` AND (title ILIKE $${params.length} OR description ILIKE $${params.length} OR organizer ILIKE $${params.length})`;
+    where += ` AND (e.title ILIKE $${params.length} OR e.description ILIKE $${params.length} OR e.organizer ILIKE $${params.length})`;
   }
 
   if (lat !== undefined && lon !== undefined && radius_km !== undefined) {
@@ -54,39 +55,86 @@ const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km }
     const idx = params.length - 2; // starting index of lat
     where += ` AND (
       6371 * acos(
-        cos(radians($${idx})) * cos(radians(lat)) *
-        cos(radians(lon) - radians($${idx+1})) +
-        sin(radians($${idx})) * sin(radians(lat))
+        cos(radians($${idx})) * cos(radians(e.lat)) *
+        cos(radians(e.lon) - radians($${idx+1})) +
+        sin(radians($${idx})) * sin(radians(e.lat))
       )
     ) <= $${idx+2}`;
   }
 
+  // Use LATERAL to fetch first image + all images per event
   let q = `
-    SELECT *
-    FROM events
+    SELECT
+      e.*,
+      img.first_image,
+      COALESCE(img.images, '[]') AS images
+    FROM events e
+    LEFT JOIN LATERAL (
+      SELECT
+        (SELECT row_to_json(i) FROM (
+          SELECT id, filename, position
+          FROM event_images ie1
+          WHERE ie1.event_id = e.id
+          ORDER BY position, id
+          LIMIT 1
+        ) i) AS first_image,
+        (SELECT json_agg(row_to_json(ii)) FROM (
+          SELECT id, filename, position
+          FROM event_images ie2
+          WHERE ie2.event_id = e.id
+          ORDER BY position, id
+        ) ii) AS images
+    ) img ON true
     ${where}
-    ORDER BY start_time NULLS LAST, created_at DESC
+    ORDER BY e.start_time NULLS LAST, e.created_at DESC
   `;
 
-  // Only apply pagination if both page and limit are provided
+  // pagination (if provided)
   if (page !== undefined && limit !== undefined) {
     const offset = (page - 1) * limit;
     params.push(limit, offset);
     q += ` LIMIT $${params.length - 1} OFFSET $${params.length};`;
   } else {
-    q += ';'; 
+    q += ';';
   }
 
   const rows = (await pool.query(q, params)).rows;
-
   return rows;
 };
 
+
 // Read one
 const getEventById = async (id) => {
-  const res = await pool.query('SELECT * FROM events WHERE id = $1', [id]);
+  const q = `
+    SELECT
+      e.*,
+      img.first_image,
+      COALESCE(img.images, '[]') AS images
+    FROM events e
+    LEFT JOIN LATERAL (
+      SELECT
+        (SELECT row_to_json(i) FROM (
+          SELECT id, filename, position
+          FROM event_images ie1
+          WHERE ie1.event_id = e.id
+          ORDER BY position, id
+          LIMIT 1
+        ) i) AS first_image,
+        (SELECT json_agg(row_to_json(ii)) FROM (
+          SELECT id, filename, position
+          FROM event_images ie2
+          WHERE ie2.event_id = e.id
+          ORDER BY position, id
+        ) ii) AS images
+    ) img ON true
+    WHERE e.id = $1
+    LIMIT 1;
+  `;
+  const res = await pool.query(q, [id]);
+  if (res.rows.length === 0) throw new Error('Event not found');
   return res.rows[0];
 };
+
 
 // Update
 const updateEvent = async (id, data) => {

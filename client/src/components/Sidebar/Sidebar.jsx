@@ -1,5 +1,5 @@
 import './Sidebar.css';
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import mapboxgl from "mapbox-gl";
 
@@ -18,6 +18,7 @@ const Sidebar = ({
   const searchRef = useRef(null); // Reference to the search container div
   const geocoderRef = useRef(null); /// Reference to the geocoder instance
   const containerElRef = useRef(null); // Reference to the geocoder control element
+  const [imgError, setImgError] = useState(false);
    
   const EVENT_TYPES = [
     "concert",
@@ -94,14 +95,28 @@ const Sidebar = ({
     };
   }, [map]);
 
-  console.log('events sample', events?.slice?.(0,21));
-  console.log("Sidebar events:", events.length);
+  // console.log('events sample', events?.slice?.(0,21));
+  // console.log("Sidebar events:", events.length);
 
   const getEventImage = (event) => {
-    if (!event.image) return null;
+    const first = event.first_image || (Array.isArray(event.images) && event.images[0]);
+    if (!first) return null;
 
-    return `http://localhost:3000/uploads/events/${event.id}/${event.image}`;
+    return `http://localhost:3000/uploads/events/${event.id}/${first.filename}`;
   };
+
+
+  useEffect(() => {
+    if (!events || events.length === 0) return;
+
+    const withImages = events.find(
+      e => Array.isArray(e.images) && e.images.length > 1
+    );
+
+    if (withImages) {
+      console.log("EVENT WITH MULTIPLE IMAGES:", withImages);
+    }
+  }, [events]);
 
 
   return (
@@ -130,6 +145,8 @@ const Sidebar = ({
           />
         </label>
       </div>
+
+      {/* <img src="http://localhost:3000/uploads/events/21/1770423805797-92c39196-8b3a-4ce9-8c77-704a10145aa5.png" alt="" /> */}
 
       <div className="event-type-filters">
         <span className="filters-title">Typ wydarzenia</span>
@@ -167,18 +184,16 @@ const Sidebar = ({
         <ul className="sidebar-events-list">
           {events.map((event) => {
             const imageUrl = getEventImage(event);
-
+            console.log(`Event ${event.id} image URL:`, imageUrl);
             return (
               <li key={event.id} className="sidebar-event-card">
                 <div className="event-image">
-                  {imageUrl ? (
+                  {imageUrl && !imgError ? (
                     <img
                       src={imageUrl}
                       alt={event.title}
                       loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
+                      onError={() => setImgError(true)}
                     />
                   ) : (
                     <div className="event-image-placeholder">
@@ -186,20 +201,31 @@ const Sidebar = ({
                     </div>
                   )}
                 </div>
-
                 <div className="event-content">
                   <h4 className="event-title">{event.title}</h4>
 
+                  <div>
+                    <span className='event-description'>{event.description}</span>
+                  </div>
+
                   <div className="event-meta">
-                    <span className="event-type">{event.event_type}</span>
+                    <span className="event-type">
+
+                      {event.is_free && (
+                        <span className="event-free">Free</span>
+                      ) || (
+                        <span className="event-paid">Tickets</span>
+                      )}
+
+                      {event.event_type}
+                    </span>
+
                     <span className="event-date">
                       {new Date(event.start_time).toLocaleDateString("pl-PL")}
                     </span>
                   </div>
 
-                  {event.is_free && (
-                    <span className="event-free">Free</span>
-                  )}
+                  
                 </div>
               </li>
             );
