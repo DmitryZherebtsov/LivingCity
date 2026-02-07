@@ -2,15 +2,18 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const pool = require('./config/dbConfig');
-const eventRoutes = require('./routes/eventRoutes');
 const cookieParser = require('cookie-parser');
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+const eventImageRoutes = require('./routes/eventImageRoutes');
 
 const app = express();
 
-/* ---------- CORS ---------- */
+const path = require('path');
+
+/* ---------- cors for links ---------- */
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
@@ -26,10 +29,14 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-/* ---------- ROUTES ---------- */
+/* ---------- routes  ---------- */
 app.use('/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/events', eventImageRoutes);
+
+/* ---------- folder for images ---------- */
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
   res.send('LivingCity API is running');
