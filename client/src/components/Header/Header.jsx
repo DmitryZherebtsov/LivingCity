@@ -1,10 +1,11 @@
 import { NavLink } from "react-router-dom";
 import { MapPin, Menu, User } from "lucide-react";
 import "./Header.css";
+import { Link } from "react-router-dom";
 
 const navLinks = [
-  { to: "/", label: "Map" },
-  { to: "/Home", label: "Home" },
+  { to: "/home", label: "Home" },
+  { to: "/map", label: "Map" },
   { to: "/events", label: "Events" },
   { to: "/organizer", label: "Create an Event" },
   { to: "/about", label: "About" },
@@ -16,12 +17,14 @@ const Header = () => {
       <div className="header-inner">
         
         {/* 1 */}
-        <div className="header-logo">
-          <div className="logo-icon">
-            <MapPin size={20} />
+        <Link to="/home">
+          <div className="header-logo">
+              <div className="logo-icon">
+                <MapPin size={20} />
+              </div>
+              <span className="logo-text">LivingCity</span>
           </div>
-          <span className="logo-text">LivingCity</span>
-        </div>
+        </Link>
 
         {/* 2 */}
         <nav className="header-nav">

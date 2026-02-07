@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import './Map.css';
 
 const typeColors = {
@@ -10,11 +9,11 @@ const typeColors = {
   festival: '#4ae236',
   conference: '#8B5CF6',
   community: '#10B981',
-  art: 'faff0a',
+  art: '#faff0a',
   default: '#ff8c00',
 };
 
-const Map = ({ onMapReady, events = [] }) => {
+const Map = ({ onMapReady, events = [], initialCenter = null, initialZoom = 3.5 }) => {
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const markersRef = useRef([]);
@@ -22,14 +21,17 @@ const Map = ({ onMapReady, events = [] }) => {
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
+    const startCenter = initialCenter && Array.isArray(initialCenter) ? initialCenter : [10, 50];
+
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/dmitryzh/cmgdrdox900du01sa2oenbhr8',
-      center: [10, 50],
-      zoom: 3.5,
+      center: startCenter,
+      zoom: initialZoom,
       pitch: 0,
       bearing: 0,
       antialias: true,
+      language: 'pl',
     });
 
     mapRef.current = map;
@@ -38,34 +40,40 @@ const Map = ({ onMapReady, events = [] }) => {
       onMapReady(map);
     }
 
+    if (initialCenter) {
+      map.once('load', () => {
+        map.flyTo({
+          center: initialCenter,
+          zoom: Math.max(initialZoom, 10),
+          speed: 1.5,
+          curve: 1.4,
+          essential: true,
+        });
+      });
+    }
+
     return () => {
-      // cleanup
       markersRef.current.forEach(m => m.remove());
       markersRef.current = [];
       map.remove();
       mapRef.current = null;
     };
-  }, [onMapReady]);
+  }, [onMapReady, initialZoom, initialCenter ? initialCenter[0] : null, initialCenter ? initialCenter[1] : null]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    // for debug:
-    // console.log('Map - events length:', events?.length, events?.slice?.(0,3));
-
-    // remove old markers
     markersRef.current.forEach(m => m.remove());
     markersRef.current = [];
 
-    if (!events || events.length === 0) return; // no events to show
+    if (!events || events.length === 0) return;
 
     events.forEach((event) => {
       const lng = Number(event.lon);
       const lat = Number(event.lat);
 
       if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
-        // console.warn('Invalid coords for event', event.id, event.lon, event.lat);
         return;
       }
 

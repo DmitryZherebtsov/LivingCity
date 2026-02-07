@@ -113,9 +113,9 @@ const Sidebar = ({
       e => Array.isArray(e.images) && e.images.length > 1
     );
 
-    if (withImages) {
-      console.log("EVENT WITH MULTIPLE IMAGES:", withImages);
-    }
+    // if (withImages) {
+    //   console.log("EVENT WITH MULTIPLE IMAGES:", withImages);
+    // }
   }, [events]);
 
 
@@ -156,6 +156,7 @@ const Sidebar = ({
             <button
               key={type}
               type="button"
+              data-type={type}
               className={`event-type-tag ${
                 selectedTypes.includes(type) ? "active" : ""
               }`}
@@ -165,12 +166,13 @@ const Sidebar = ({
             </button>
           ))}
         </div>
+
       </div>
       {/* <FilterMap events={events} loading={loading} error={error} /> */}
 
       <div className="sidebar-events">
         <div className="sidebar-events-header">
-          <span>Nearby Events</span>
+          <span>Wydarzenia w pobliżu</span>
           <span className="events-count">{events.length} found</span>
         </div>
 
@@ -184,7 +186,7 @@ const Sidebar = ({
         <ul className="sidebar-events-list">
           {events.map((event) => {
             const imageUrl = getEventImage(event);
-            console.log(`Event ${event.id} image URL:`, imageUrl);
+            // console.log(`Event ${event.id} image URL:`, imageUrl);
             return (
               <li key={event.id} className="sidebar-event-card">
                 <div className="event-image">
@@ -224,7 +226,6 @@ const Sidebar = ({
                       {new Date(event.start_time).toLocaleDateString("pl-PL")}
                     </span>
                   </div>
-
                   
                 </div>
               </li>

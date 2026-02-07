@@ -346,3 +346,51 @@
     rgba(96, 165, 250, 0.6)
   );
 }
+
+
+
+.event-type-tag {
+  --tag-color: 148, 163, 184; 
+
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+
+  color: #cbd5f5;
+  background: rgba(var(--tag-color), 0.08);
+  border: 1px solid rgba(var(--tag-color), 0.25);
+  border-radius: 999px;
+
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.event-type-tag:hover {
+  transform: translateY(-1px);
+  background: rgba(var(--tag-color), 0.15);
+}
+
+.event-type-tag.active {
+  color: #f8fafc;
+  background: rgba(var(--tag-color), 0.25);
+  border-color: rgba(var(--tag-color), 0.6);
+  box-shadow: 0 0 0 3px rgba(var(--tag-color), 0.25);
+}
+
+
+
+
+.event-type-tag[data-type="concert"]    { --tag-color: 255, 77, 77; }
+.event-type-tag[data-type="sport"]      { --tag-color: 59, 130, 246; }
+.event-type-tag[data-type="festival"]   { --tag-color: 74, 226, 54; }
+.event-type-tag[data-type="conference"] { --tag-color: 139, 92, 246; }
+.event-type-tag[data-type="community"]  { --tag-color: 16, 185, 129; }
+.event-type-tag[data-type="meeting"]    { --tag-color: 245, 158, 11; }
+.event-type-tag[data-type="art"]        { --tag-color: 250, 204, 21; }
+.event-type-tag[data-type="standup"]    { --tag-color: 249, 115, 22; }
+.event-type-tag[data-type="other"]      { --tag-color: 156, 163, 175; }
