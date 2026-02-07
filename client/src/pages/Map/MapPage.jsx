@@ -67,6 +67,7 @@ export default function MapPage() {
         events={filteredEvents}
         onMapReady={setMap}
       />
+
     </div>
   );
 }

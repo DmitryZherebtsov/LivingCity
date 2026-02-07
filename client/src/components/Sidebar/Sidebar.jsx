@@ -2,7 +2,6 @@ import './Sidebar.css';
 import { useEffect, useRef } from "react";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import mapboxgl from "mapbox-gl";
-import FilterMap from './FilterMap';
 
 const Sidebar = ({ 
   map, 
@@ -51,7 +50,7 @@ const Sidebar = ({
       accessToken: mapboxgl.accessToken,
       mapboxgl,
       marker: false,
-      placeholder: "Szukaj miasta",
+      placeholder: "Znajdź swoje miasto",
       types: "place",
       language: "pl",
     });
@@ -95,9 +94,20 @@ const Sidebar = ({
     };
   }, [map]);
 
+  console.log('events sample', events?.slice?.(0,21));
+  console.log("Sidebar events:", events.length);
+
+  const getEventImage = (event) => {
+    if (!event.image) return null;
+
+    return `http://localhost:3000/uploads/events/${event.id}/${event.image}`;
+  };
+
+
   return (
     <aside className="sidebar-root" lang="pl">
-      <div className="sidebar-search" ref={searchRef} />
+
+      <div className="sidebar-search" ref={searchRef}>  </div>
 
       <div className="date-filters">
         <label>
@@ -140,6 +150,62 @@ const Sidebar = ({
         </div>
       </div>
       {/* <FilterMap events={events} loading={loading} error={error} /> */}
+
+      <div className="sidebar-events">
+        <div className="sidebar-events-header">
+          <span>Nearby Events</span>
+          <span className="events-count">{events.length} found</span>
+        </div>
+
+        {loading && <div className="sidebar-events-state">Loading events…</div>}
+        {error && <div className="sidebar-events-state error">Failed to load events</div>}
+
+        {!loading && !error && events.length === 0 && (
+          <div className="sidebar-events-state">No events found</div>
+        )}
+
+        <ul className="sidebar-events-list">
+          {events.map((event) => {
+            const imageUrl = getEventImage(event);
+
+            return (
+              <li key={event.id} className="sidebar-event-card">
+                <div className="event-image">
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={event.title}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div className="event-image-placeholder">
+                      {event.event_type}
+                    </div>
+                  )}
+                </div>
+
+                <div className="event-content">
+                  <h4 className="event-title">{event.title}</h4>
+
+                  <div className="event-meta">
+                    <span className="event-type">{event.event_type}</span>
+                    <span className="event-date">
+                      {new Date(event.start_time).toLocaleDateString("pl-PL")}
+                    </span>
+                  </div>
+
+                  {event.is_free && (
+                    <span className="event-free">Free</span>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
       
     </aside>
   );

@@ -2,8 +2,7 @@ import React, { useState, useMemo } from "react";
 import useEvents from "../../hooks/useEvents";
 import "./FilterMap.css";
 
-export default function FilterMap() {
-  const { events = [], loading, error } = useEvents();
+export default function FilterMap({ events = [], loading, error }) {
   const [ search, setSearch ] = useState("");
 
   const filteredEvents = useMemo(() => {
