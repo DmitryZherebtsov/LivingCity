@@ -1,11 +1,11 @@
 import React from 'react'
 
-const EventsPage = () => {
+const Organizer = () => {
   return (
     <div>
-      Hi
+      Lol
     </div>
   )
 }
 
-export default EventsPage
+export default Organizer
