@@ -180,7 +180,7 @@ const Sidebar = ({
         {error && <div className="sidebar-events-state error">Failed to load events</div>}
 
         {!loading && !error && events.length === 0 && (
-          <div className="sidebar-events-state">No events found</div>
+          <div className="sidebar-events-state">Nie znaleziono wydarzeń :\</div>
         )}
 
         <ul className="sidebar-events-list">

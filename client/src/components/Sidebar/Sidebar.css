@@ -309,7 +309,12 @@
 }
 
 .sidebar-events-state {
-  font-size: 0.8rem;
+  width: 100%;
+  /* border: 1px solid rgba(255, 255, 255, 0.08); */
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #94a3b8;
   padding: 12px 0;
 }

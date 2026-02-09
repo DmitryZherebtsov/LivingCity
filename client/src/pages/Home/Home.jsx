@@ -45,20 +45,20 @@ const Home = () => {
     geocoder.on("result", onResult);
 
     if (controlElement) {
-  geocoderContainerRef.current.appendChild(controlElement);
+    geocoderContainerRef.current.appendChild(controlElement);
 
   
   const input = controlElement.querySelector("input");
   if (input) {
-    input.setAttribute("name", "city");
-    input.setAttribute("id", "city-search");
-    input.setAttribute("aria-label", "Search for city");
+      input.setAttribute("name", "city");
+      input.setAttribute("id", "city-search");
+      input.setAttribute("aria-label", "Search for city");
 
-    input.setAttribute("autocomplete", "off");
+      input.setAttribute("autocomplete", "off");
+    }
+
+    controlElement.classList.add("home-geocoder-control");
   }
-
-  controlElement.classList.add("home-geocoder-control");
-}
 
     return () => {
       try {
