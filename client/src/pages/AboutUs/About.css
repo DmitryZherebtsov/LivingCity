@@ -1,5 +1,6 @@
 .about-page {
-  font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial;
+  user-select: none;
+  font-family: Inter, Roboto, sans-serif;
   color: #0f172a;
   line-height: 1.45;
 }

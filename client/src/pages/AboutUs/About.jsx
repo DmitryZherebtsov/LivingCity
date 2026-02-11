@@ -15,7 +15,7 @@ export default function About() {
         aria-label="Hero - znajdź wydarzenia"
       >
         <div className="hero-inner">
-          <span className="hero-pill">EventMap</span>
+          <span className="hero-pill">Living City</span>
 
           <h1 className="hero-title">
             Odkrywaj wydarzenia <span className="accent">w Twoim mieście</span>
@@ -38,7 +38,7 @@ export default function About() {
             <h2 className="features-pre">CO MOŻESZ ZROBIĆ</h2>
             <h3 className="features-title">Jedno miejsce do odkrywania i dzielenia się wydarzeniami</h3>
             <p className="features-sub">
-              EventMap łączy lokalne społeczności — znajdź wydarzenie, zostań organizatorem lub poznaj nowych ludzi.
+              Living City łączy lokalne społeczności — znajdź wydarzenie, zostań organizatorem lub poznaj nowych ludzi.
             </p>
           </div>
 
@@ -74,7 +74,7 @@ export default function About() {
               <h4 className="feature-title">Znajdź nowych przyjaciół</h4>
               <p className="feature-desc">
                 Nawiąż kontakt z osobami o podobnych zainteresowaniach. Czy to muzyka, sztuka, sport czy kuchnia —
-                EventMap łączy społeczności i pomaga budować trwałe znajomości.
+                Living City łączy społeczności i pomaga budować trwałe znajomości.
               </p>
             </article>
           </div>

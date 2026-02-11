@@ -160,15 +160,15 @@ export default function EventsPage() {
                   </div>
 
                   <div className="card-actions">
-                    {ev.url ? (
+                    {/* {ev.url ? (
                       <a className="btn-ghost" href={ev.url} target="_blank" rel="noreferrer">
                         Learn More →
                       </a>
-                    ) : (
-                      <a className="btn-ghost" href={`#/events/${ev.id}`}>
+                    ) : ( */}
+                      <a className="btn-ghost" href={`/events/${ev.id}`}>
                         Learn More →
                       </a>
-                    )}
+                    {/* )} */}
                     <div className="spacer" />
                     <span className={`ticket-badge ${ev.is_free ? "free" : "paid"}`}>
                       {ev.is_free ? "Free" : ev.capacity ? "Paid" : "Paid"}

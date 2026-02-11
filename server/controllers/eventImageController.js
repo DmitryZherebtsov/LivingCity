@@ -51,7 +51,7 @@ const uploadImages = async (req, res) => {
           .toFile(outPath);
       }
 
-      const publicUrl = `/uploads/events/${eventId}/${filename}`;
+      const publicUrl = `${filename}`;
 
       const record = await eventImageModel.createImage({
         event_id: eventId,

@@ -10,7 +10,6 @@ import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Events from "./pages/Events";
-import MapView from "./pages/MapView";
 import Analytics from "./pages/Analytics";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
@@ -41,7 +40,6 @@ const App = () => (
             >
               <Route path="/" element={<Index />} />
               <Route path="/events" element={<Events />} />
-              <Route path="/map" element={<MapView />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/users" element={<Users />} />
               <Route path="/settings" element={<Settings />} />

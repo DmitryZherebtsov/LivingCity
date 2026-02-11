@@ -38,7 +38,7 @@ export default function Settings() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="appName">Application Name</Label>
-              <Input id="appName" defaultValue="EventMap Admin" />
+              <Input id="appName" defaultValue="Living City Admin" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="timezone">Timezone</Label>
