@@ -46,7 +46,7 @@
   max-width: 760px;
   font-size: 18px;
 }
-.btn-primary {
+.btn-primary-org {
   display: inline-block;
   background: #06b6d4;
   color: #fff;
@@ -57,7 +57,7 @@
   /* box-shadow: 0 8px 24px rgba(6,182,212,0.18); */
   transition: transform .14s ease, box-shadow .14s ease;
 }
-.btn-primary:hover {
+.btn-primary-org:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 32px rgba(6,182,212,0.2);
 }

@@ -13,6 +13,8 @@ function requireAuth(req, res, next) {
       process.env.ACCESS_TOKEN_SECRET
     );
 
+    console.log("TOKEN OK:", payload);
+
     req.user = {
       id: payload.sub,
       email: payload.email,
@@ -21,9 +23,8 @@ function requireAuth(req, res, next) {
 
     next();
   } catch (err) {
-    return res.status(401).json(
-      { message:'Invalid or expired token' }
-    );
+    console.log("JWT ERROR:", err.message);
+    return res.status(401).json({ message:'Invalid or expired token' });
   }
 }
 

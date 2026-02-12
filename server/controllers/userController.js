@@ -62,9 +62,27 @@ const remove = async (req, res) => {
   }
 };
 
+const getMe = async (req, res) => {
+  try {
+    const user = await userService.getUserById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.json(user);
+  } catch (err) {
+    console.error('Get me error', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
 
 const updateMe = async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
     const userId = req.user.id; 
     const { name, email, password } = req.body;
 
@@ -128,6 +146,10 @@ const updateMe = async (req, res) => {
 
 const deleteMe = async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
     const userId = req.user.id;
     const { password, hard } = req.body;
 
@@ -169,5 +191,6 @@ module.exports = {
   update,
   remove,
   updateMe,
-  deleteMe
+  deleteMe,
+  getMe
 };

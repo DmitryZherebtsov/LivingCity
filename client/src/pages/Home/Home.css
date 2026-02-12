@@ -12,14 +12,20 @@
   z-index: 0;
   background: linear-gradient(
     120deg,
-    #0f172a,
+  #0c1220,
     #2a1652,
-    #36173e,
-    #1f2a6f,
+    #3b1744,
+    #1f2a72,
     #0f172a
   );
   background-size: 400% 400%;
   animation: gradientShift 18s ease infinite;
+  
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .home-content {
@@ -101,12 +107,6 @@
 .search-form button:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 @media (max-width: 768px) {

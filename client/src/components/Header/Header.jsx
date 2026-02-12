@@ -1,32 +1,36 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { MapPin, Menu, User } from "lucide-react";
 import "./Header.css";
-import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { AppContext } from "../../context/AppContext";
 
 const navLinks = [
-  { to: "/home", label: "Home" },
-  { to: "/map", label: "Map" },
-  { to: "/events", label: "Events" },
-  { to: "/organizer", label: "Create an Event" },
-  { to: "/about", label: "About" },
+  { to: "/home", label: "Strona główna" },
+  { to: "/map", label: "Mapa" },
+  { to: "/events", label: "Wydarzenia" },
+  { to: "/organizer", label: "Utwórz wydarzenie" },
+  { to: "/about", label: "O nas" },
 ];
 
 const Header = () => {
+  const { isLoggedin, user, backendUrl } = useContext(AppContext);
+
+  const avatarUrl =
+    isLoggedin && user && user.profile_image
+      ? `${backendUrl}/uploads/users/${user.id}/${user.profile_image}`
+      : null;
+
   return (
     <header className="header">
       <div className="header-inner">
-        
-        {/* 1 */}
-        <Link to="/home">
-          <div className="header-logo">
-              <div className="logo-icon">
-                <MapPin size={20} />
-              </div>
-              <span className="logo-text">LivingCity</span>
+
+        <Link to="/home" className="header-logo">
+          <div className="logo-icon">
+            <MapPin size={20} />
           </div>
+          <span className="logo-text">LivingCity</span>
         </Link>
 
-        {/* 2 */}
         <nav className="header-nav">
           {navLinks.map((link) => (
             <NavLink
@@ -41,22 +45,45 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* 3 */}
         <div className="header-actions">
+
           <button className="icon-btn mobile-only">
             <Menu size={20} />
           </button>
 
-          <button className="login-btn desktop-only">
-            <User size={16} />
-            <span>Login</span>
-          </button>
+          {!isLoggedin && (
+            <Link to="/login" className="login-btn desktop-only">
+              <User size={16} />
+              <span>Zaloguj się</span>
+            </Link>
+          )}
 
-          <button className="icon-btn mobile-only">
-            <User size={18} />
-          </button>
+          {isLoggedin && (
+            <Link
+              to="/profile"
+              className="avatar-circle desktop-only"
+              title={user?.name || user?.email}
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="avatar" />
+              ) : (
+                <User size={18} />
+              )}
+            </Link>
+          )}
+
+          <Link
+            to={isLoggedin ? "/profile" : "/login"}
+            className="avatar-circle mobile-only"
+          >
+            {isLoggedin && avatarUrl ? (
+              <img src={avatarUrl} alt="avatar" />
+            ) : (
+              <User size={18} />
+            )}
+          </Link>
+
         </div>
-          
       </div>
     </header>
   );

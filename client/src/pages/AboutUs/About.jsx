@@ -26,7 +26,7 @@ export default function About() {
             Dołącz do społeczności — dziel się wydarzeniami i łatwo nawiązuj kontakty.
           </p>
 
-          <a className="btn-primary" href="/contact">
+          <a className="btn-primary-org" href="/contact">
             Skontaktuj się
           </a>
         </div>

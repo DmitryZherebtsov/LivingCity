@@ -7,6 +7,10 @@ import EventsPage from "./pages/Events/EventsPage";
 import Organizer from "./pages/Organizer/Organizer";
 import About from "./pages/AboutUs/About";
 import EventDetail from "./pages/EventDetail/EventDetail";
+import Auth from "./pages/Auth/Auth";
+import GuestRoute from "./components/RouteControl/GuestRoute";
+import ProtectedRoute from "./components/RouteControl/ProtectedRoute";
+import Profile from "./pages/Profile/Profile";
 
 function App() {
   return (
@@ -16,6 +20,19 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
+
+        <Route path="/login" element={
+          <GuestRoute>
+            <Auth />
+          </GuestRoute>} 
+        />
+
+        <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/map" element={<MapPage />} />
 

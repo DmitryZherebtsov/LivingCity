@@ -13,9 +13,13 @@ const upload = multer({
 });
 
 router.get('/', requireAuth, requireRole([ROLES.ADMIN]), controller.list);
-router.put('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.update);
-router.delete('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.remove);
+
+router.get('/me', requireAuth, controller.getMe);
 router.patch('/me', requireAuth, upload.single('profile_image'), controller.updateMe);
 router.delete('/me', requireAuth, controller.deleteMe);
+
+router.put('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.update);
+router.delete('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.remove);
+
 
 module.exports = router;
