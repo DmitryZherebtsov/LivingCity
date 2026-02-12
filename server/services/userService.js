@@ -26,7 +26,7 @@ const updateUser = async (id, { email, name, roleId, isActive }) => {
   return res.rows[0];
 };
 
-const softDeleteUser = async (id) => { // only making unactive (withou real delete from db)
+const softDeleteUser = async (id) => {  // for admin to "deactivate" a user without removing their data? TODO
   const q = `
     UPDATE users
     SET is_active = false
@@ -37,7 +37,7 @@ const softDeleteUser = async (id) => { // only making unactive (withou real dele
   return res.rows[0];
 };
 
-const deleteUser = async (id) => { // real delete from db
+const deleteUser = async (id) => {
   const q = `
     DELETE FROM users
     WHERE id = $1
@@ -47,9 +47,63 @@ const deleteUser = async (id) => { // real delete from db
   return res.rows[0];
 };
 
+const getUserById = async (id) => {
+  const q = `
+    SELECT id, email, name, password_hash, profile_image
+    FROM users
+    WHERE id = $1
+    LIMIT 1
+  `;
+  const res = await pool.query(q, [id]);
+  return res.rows[0];
+};
+
+const updateUserProfile = async (id, { name, email, passwordHash, profile_image }) => {
+  const fields = [];
+  const values = [];
+  let idx = 1;
+
+  if (name !== undefined) {
+    fields.push(`name = $${idx++}`);
+    values.push(name);
+  }
+
+  if (email !== undefined) {
+    fields.push(`email = $${idx++}`);
+    values.push(email);
+  }
+
+  if (passwordHash) {
+    fields.push(`password_hash = $${idx++}`);
+    values.push(passwordHash);
+  }
+
+  if (profile_image) {
+    fields.push(`profile_image = $${idx++}`);
+    values.push(profile_image);
+  }
+
+  if (fields.length === 0) return null;
+
+  const q = `
+    UPDATE users
+    SET ${fields.join(', ')}
+    WHERE id = $${idx}
+    RETURNING id, email, name, profile_image
+  `;
+
+  values.push(id);
+
+  const res = await pool.query(q, values);
+  return res.rows[0];
+};
+
+
 module.exports = { 
   listUsers,
   updateUser,
   deleteUser,
-  softDeleteUser
+  softDeleteUser,
+  getUserById,
+  updateUserProfile
 };

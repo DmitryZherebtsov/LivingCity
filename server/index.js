@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const eventImageRoutes = require('./routes/eventImageRoutes');
+const publicAuthRoutes = require('./routes/publicAuthRoutes');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/events', eventImageRoutes);
+app.use('/api/public-auth', publicAuthRoutes);
 
 /* ---------- folder for images ---------- */
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

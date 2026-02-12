@@ -17,7 +17,6 @@ const login = async (req, res) => {
 
     await authService.revokeAllUserRefreshTokens(user.id);
 
-    // access token creat
     const payload = {
       sub: user.id,
       email: user.email,
@@ -26,11 +25,9 @@ const login = async (req, res) => {
 
     const accessToken = generateAccessToken(payload); 
 
-    // refresh token
     const refreshTokenPlain = generateRefreshTokenPlain();
     const saved = await authService.saveRefreshToken(user.id, refreshTokenPlain, req.ip, req.get('User-Agent') || null);
 
-    // refresh token as httpOnly cookie
     const isProd = process.env.NODE_ENV === 'production';
     res.cookie('refreshToken', refreshTokenPlain, {
       httpOnly: true,

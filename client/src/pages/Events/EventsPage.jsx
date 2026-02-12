@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import useEvents from "../../hooks/useEvents";
 import "./EventsPage.css";
 import { Link } from "react-router-dom";
+import { MapPin, Calendar, Users } from "lucide-react";
 
 const getEventImage = (event) => {
   const first = event.first_image || (Array.isArray(event.images) && event.images[0]);
@@ -27,7 +28,6 @@ const formatDateRange = (startIso, endIso) => {
   }
   return `${dateFormatter(start)} — ${dateFormatter(end)}`;
 };
-
 
 const truncate = (text = "", max = 140) =>
   text.length > max ? text.slice(0, max - 1).trim() + "…" : text;
@@ -144,35 +144,29 @@ export default function EventsPage() {
 
                   <div className="card-meta">
                     <div className="meta-row">
-                      <span className="meta-emoji">📍</span>
+                      <MapPin className="meta-icon" size={16} aria-hidden="true" />
                       <span className="muted">{ev.city || ev.address || "—"}</span>
                     </div>
 
                     <div className="meta-row">
-                      <span className="meta-emoji">📅</span>
+                      <Calendar className="meta-icon" size={16} aria-hidden="true" />
                       <span className="muted">{formatDateRange(ev.start_time, ev.end_time)}</span>
                     </div>
 
                     <div className="meta-row">
-                      <span className="meta-emoji">👥</span>
+                      <Users className="meta-icon" size={16} aria-hidden="true" />
                       <span className="muted">{(ev.visitor_count ?? 0).toLocaleString()} going</span>
                     </div>
                   </div>
 
                   <div className="card-actions">
-                    {/* {ev.url ? (
-                      <a className="btn-ghost" href={ev.url} target="_blank" rel="noreferrer">
-                        Learn More →
-                      </a>
-                    ) : ( */}
-                      <a className="btn-ghost" href={`/events/${ev.id}`}>
-                        Learn More →
-                      </a>
-                    {/* )} */}
-                    <div className="spacer" />
                     <span className={`ticket-badge ${ev.is_free ? "free" : "paid"}`}>
                       {ev.is_free ? "Free" : ev.capacity ? "Paid" : "Paid"}
                     </span>
+                    <div className="spacer" />
+                    <a className="btn-ghost" href={`/events/${ev.id}`}>
+                      Learn More →
+                    </a>
                   </div>
                 </div>
               </article>
@@ -183,8 +177,6 @@ export default function EventsPage() {
             )}
           </div>
 
-
-    {/* pagination for page */}
           <div className="pagination-row">
             <div className="pagination-info">
               Showing <strong>{pageItems.length}</strong> of <strong>{filtered.length}</strong> results

@@ -1,6 +1,5 @@
 const pool = require('../config/dbConfig');
 
-// Create
 const createEvent = async (data) => {
   const {
     title,
