@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Search, Filter, MoreHorizontal, Mail, Shield, UserCircle } from "lucide-react";
+import { Plus, Search, MoreHorizontal, Mail, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -20,61 +20,64 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { fetchUsers, type UserDTO } from "@/services/usersService";
 
-const roleStyles = {
-  Admin: "bg-primary/10 text-primary",
-  Manager: "bg-warning/10 text-warning",
-  User: "bg-muted text-muted-foreground",
-};
-
 const statusStyles = {
-  active: "bg-success/10 text-success",
-  inactive: "bg-muted text-muted-foreground",
-  pending: "bg-warning/10 text-warning",
-};
+  aktywny: "bg-success/10 text-success",
+  nieaktywny: "bg-muted text-muted-foreground",
+  oczekujący: "bg-warning/10 text-warning",
+} as const;
 
-type LocalUser = {
+type LokalnyUzytkownik = {
   id: string | number;
   name: string;
   email: string;
   role: string;
-  status: "active" | "inactive" | "pending";
+  status: "aktywny" | "nieaktywny" | "oczekujący";
   events: number;
   joined: string;
 };
 
-export default function Users() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [users, setUsers] = useState<LocalUser[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function Uzytkownicy() {
+  const [wyszukiwanie, setWyszukiwanie] = useState("");
+  const [uzytkownicy, setUzytkownicy] = useState<LokalnyUzytkownik[]>([]);
+  const [ladowanie, setLadowanie] = useState(true);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const data: UserDTO[] = await fetchUsers();
+        const dane: UserDTO[] = await fetchUsers();
         if (!mounted) return;
 
-        const mapped = data.map((u) => {
-          const name = u.name ?? u.email ?? "Unnamed";
-          const role = (u.role_name ?? "User").charAt(0).toUpperCase() + (u.role_name ?? "user").slice(1);
-          const isActive = typeof u.is_active === "boolean" ? u.is_active : true;
-          return {
-            id: u.id,
-            name,
-            email: u.email,
-            role,
-            status: isActive ? "active" : "inactive",
-            events: 0,
-            joined: u.created_at ? new Date(u.created_at).toLocaleDateString() : "—",
-          } as LocalUser;
-        });
+        const tylkoZwykli: LokalnyUzytkownik[] = dane
+          .filter(
+            (u) =>
+              // (u.role_id && String(u.role_id) === "eb778bbf-8376-49db-b618-4e85c8707444") ||
+              (u.role_name && String(u.role_name).toLowerCase() === "user")
+          )
+          .map((u) => {
+            const statusValue: "aktywny" | "nieaktywny" | "oczekujący" =
+              typeof u.is_active === "boolean"
+                ? u.is_active
+                  ? "aktywny"
+                  : "nieaktywny"
+                : "aktywny";
+            return {
+              id: u.id,
+              name: u.name ?? u.email ?? "Brak nazwy",
+              email: u.email ?? "—",
+              role: "Użytkownik",
+              status: statusValue,
+              events: 0,
+              joined: u.created_at ? new Date(u.created_at).toLocaleDateString() : "—",
+            };
+          });
 
-        setUsers(mapped);
-      } catch (err) {
-        console.error("Failed to fetch users", err);
-        setUsers([]);
+        setUzytkownicy(tylkoZwykli);
+      } catch (error) {
+        console.error("Błąd pobierania użytkowników", error);
+        setUzytkownicy([]);
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) setLadowanie(false);
       }
     })();
     return () => {
@@ -82,99 +85,94 @@ export default function Users() {
     };
   }, []);
 
-  const filteredUsers = users.filter(user =>
-    (user.name + user.email).toLowerCase().includes(searchQuery.toLowerCase())
+  const przefiltrowani = uzytkownicy.filter((u) =>
+    (u.name + u.email).toLowerCase().includes(wyszukiwanie.toLowerCase())
   );
 
-  const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0] || "").join("").toUpperCase().slice(0, 2);
-  };
+  const inicjaly = (name: string) =>
+    name
+      .split(" ")
+      .map((n) => n[0] || "")
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="page-header">Users</h1>
-          <p className="page-description">Manage user accounts and permissions</p>
+          <h1 className="page-header">Użytkownicy</h1>
+          <p className="page-description">Zarządzanie zwykłymi użytkownikami</p>
         </div>
         <Button size="sm">
           <Plus className="w-4 h-4 mr-2" />
-          Add User
+          Dodaj użytkownika
         </Button>
       </div>
 
-      {/* Search & Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
+        <div className="relative flex-1 max-w-md">
           <Input
-            placeholder="Search users..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Szukaj użytkownika..."
+            value={wyszukiwanie}
+            onChange={(e) => setWyszukiwanie(e.target.value)}
             className="pl-10"
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         </div>
-        <Button variant="outline">
-          <Filter className="w-4 h-4 mr-2" />
-          Filters
-        </Button>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-card rounded-xl border border-border overflow-hidden animate-fade-in">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="font-medium">User</TableHead>
-              <TableHead className="font-medium">Role</TableHead>
-              <TableHead className="font-medium">Status</TableHead>
-              <TableHead className="font-medium text-center">Events</TableHead>
-              <TableHead className="font-medium">Joined</TableHead>
+            <TableRow>
+              <TableHead>Użytkownik</TableHead>
+              <TableHead>Rola</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Data rejestracji</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading ? (
+            {ladowanie ? (
               <TableRow>
                 <TableCell colSpan={6}>
-                  <div className="py-6 text-center">Loading users...</div>
+                  <div className="py-6 text-center">Ładowanie użytkowników...</div>
                 </TableCell>
               </TableRow>
-            ) : filteredUsers.length === 0 ? (
+            ) : przefiltrowani.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6}>
-                  <div className="py-6 text-center">No users found</div>
+                  <div className="py-6 text-center">Brak użytkowników</div>
                 </TableCell>
               </TableRow>
             ) : (
-              filteredUsers.map((user) => (
-                <TableRow key={user.id} className="cursor-pointer">
+              przefiltrowani.map((u) => (
+                <TableRow key={u.id} className="cursor-pointer">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
                         <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                          {getInitials(user.name)}
+                          {inicjaly(u.name)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <p className="font-medium">{u.name}</p>
+                        <p className="text-sm text-muted-foreground">{u.email}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={roleStyles[user.role as keyof typeof roleStyles] ?? ""}>
-                      {user.role}
+                    <Badge variant="secondary" className="bg-muted text-muted-foreground">
+                      {u.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={statusStyles[user.status]}>
-                      {user.status}
+                    <Badge variant="secondary" className={statusStyles[u.status]}>
+                      {u.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-center">{user.events}</TableCell>
-                  <TableCell className="text-muted-foreground">{user.joined}</TableCell>
+                  <TableCell className="text-muted-foreground">{u.joined}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -185,15 +183,11 @@ export default function Users() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>
                           <UserCircle className="w-4 h-4 mr-2" />
-                          View Profile
+                          Zobacz profil
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           <Mail className="w-4 h-4 mr-2" />
-                          Send Email
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Shield className="w-4 h-4 mr-2" />
-                          Change Role
+                          Wyślij wiadomość
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -206,10 +200,10 @@ export default function Users() {
       </div>
 
       <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>Showing {filteredUsers.length} of {users.length} users</span>
+        <span>Wyświetlono {przefiltrowani.length} z {uzytkownicy.length} użytkowników</span>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" disabled>Previous</Button>
-          <Button variant="outline" size="sm">Next</Button>
+          <Button variant="outline" size="sm" disabled>Poprzednia</Button>
+          <Button variant="outline" size="sm">Następna</Button>
         </div>
       </div>
     </div>

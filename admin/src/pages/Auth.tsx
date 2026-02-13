@@ -10,21 +10,20 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
 const loginSchema = z.object({
-  email: z.string().trim().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().trim().email("Nieprawidłowy adres email"),
+  password: z.string().min(1, "Hasło jest wymagane"),
 });
 
 const registerSchema = z.object({
-  name: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
-  email: z.string().trim().email("Invalid email address").max(255, "Email is too long"),
-  password: z.string().min(6, "Password must be at least 6 characters").max(100, "Password is too long"),
+  name: z.string().trim().min(2, "Imię musi mieć co najmniej 2 znaki").max(100, "Imię jest za długie"),
+  email: z.string().trim().email("Nieprawidłowy adres email").max(255, "Email jest za długi"),
+  password: z.string().min(6, "Hasło musi mieć co najmniej 6 znaków").max(100, "Hasło jest za długie"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "Hasła nie są takie same",
   path: ["confirmPassword"],
 });
 
-// =======================
 export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,8 +43,8 @@ export default function Auth() {
   useEffect(() => {
     if (location.state?.reason === "unauthorized") {
       toast({
-        title: "Authentication required",
-        description: "Please sign in to access the dashboard",
+        title: "Wymagana autoryzacja",
+        description: "Zaloguj się, aby uzyskać dostęp do panelu",
         variant: "destructive",
       });
     }
@@ -85,9 +84,9 @@ export default function Auth() {
 
         const { error } = await login(email, password);
         if (error) {
-          toast({ title: "Login failed", description: error, variant: "destructive" });
+          toast({ title: "Logowanie nie powiodło się", description: error, variant: "destructive" });
         } else {
-          toast({ title: "Welcome back!", description: "You've successfully logged in." });
+          toast({ title: "Witamy ponownie!", description: "Zostałeś pomyślnie zalogowany." });
           navigate("/events");
         }
       } else {
@@ -106,8 +105,8 @@ export default function Auth() {
 
         if (!error) {
           toast({
-            title: "Account created",
-            description: "You can now sign in.",
+            title: "Konto utworzone",
+            description: "Możesz się teraz zalogować.",
           });
 
           setIsLogin(true);
@@ -132,31 +131,31 @@ export default function Auth() {
             <MapPin className="w-7 h-7 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">Living City</h1>
-          <p className="text-muted-foreground mt-1">Event Management Admin/Moderator Panel</p>
+          <p className="text-muted-foreground mt-1">Panel administracyjny / moderatora</p>
         </div>
 
         <Card className="border-border/50 shadow-xl">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl text-center">
-              {isLogin ? "Sign in to your account" : "Create an account"}
+              {isLogin ? "Zaloguj się do swojego konta" : "Utwórz konto"}
             </CardTitle>
             <CardDescription className="text-center">
               {isLogin 
-                ? "Enter your credentials to access the dashboard" 
-                : "Fill in your details to get started"}
+                ? "Wprowadź dane logowania, aby uzyskać dostęp do panelu" 
+                : "Wypełnij formularz, aby rozpocząć"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">Imię i nazwisko</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Jan Kowalski"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className={`pl-10 ${errors.name ? "border-destructive" : ""}`}
@@ -173,7 +172,7 @@ export default function Auth() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="twoj@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
@@ -183,7 +182,7 @@ export default function Auth() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Hasło</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -207,7 +206,7 @@ export default function Auth() {
 
               {!isLogin && (
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword">Potwierdź hasło</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -227,11 +226,11 @@ export default function Auth() {
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
                     <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    {isLogin ? "Signing in..." : "Creating account..."}
+                    {isLogin ? "Logowanie..." : "Tworzenie konta..."}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    {isLogin ? "Sign in" : "Create account"}
+                    {isLogin ? "Zaloguj się" : "Utwórz konto"}
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 )}
@@ -240,7 +239,7 @@ export default function Auth() {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                {isLogin ? "Nie masz konta?" : "Masz już konto?"}
                 <button
                   type="button"
                   onClick={() => {
@@ -249,15 +248,12 @@ export default function Auth() {
                   }}
                   className="ml-1 text-primary hover:underline font-medium"
                 >
-                  {isLogin ? "Sign up" : "Sign in"}
+                  {isLogin ? "Zarejestruj się" : "Zaloguj się"}
                 </button>
               </p>
             </div>
           </CardContent>
         </Card>
-
-        {/* <p className="text-center text-xs text-muted-foreground mt-6">
-        </p> */}
       </div>
     </div>
   );

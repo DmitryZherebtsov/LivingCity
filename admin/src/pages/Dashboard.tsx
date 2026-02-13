@@ -5,8 +5,8 @@ import { RecentEventsTable } from "@/components/dashboard/RecentEventsTable";
 import { MapPreview } from "@/components/dashboard/MapPreview";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { fetchEvents, calculateStats } from '@/services/eventsService';
-import type { Event, Stats } from '@/services/eventsService'; // Імпорт типів
+import { fetchEvents, calculateStats } from "@/services/eventsService";
+import type { Event, Stats } from "@/services/eventsService";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Dashboard() {
@@ -27,92 +27,82 @@ export default function Dashboard() {
   const { isLoading, user } = useAuth();
 
   const filteredEvents = useMemo(() => {
-  const query = searchQuery.trim().toLowerCase();
-  if (!query) return events;
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return events;
 
-  const isNumeric = /^\d+$/.test(query);
-  const idQuery = Number(query);
+    const isNumeric = /^\d+$/.test(query);
+    const idQuery = Number(query);
 
-  return events.filter((event) => {
-    if (isNumeric) {
-      return event.id === idQuery;
-    }
+    return events.filter((event) => {
+      if (isNumeric) {
+        return event.id === idQuery;
+      }
 
-    return [
-      event.title,
-      event.address,
-      event.organizer,
-      event.event_type,
-      event.description,
-    ].some((field) =>
-      field?.toLowerCase().includes(query)
-    );
-  });
-}, [events, searchQuery]);
+      return [
+        event.title,
+        event.address,
+        event.organizer,
+        event.event_type,
+        event.description,
+      ].some((field) => field?.toLowerCase().includes(query));
+    });
+  }, [events, searchQuery]);
 
+  useEffect(() => {
+    if (isLoading) return;
 
+    const loadData = async () => {
+      const fetchedEvents = await fetchEvents();
+      setEvents(fetchedEvents);
+      setStats(calculateStats(fetchedEvents));
+      setLoading(false);
+    };
 
-useEffect(() => {
-  if (isLoading) return;
-
-  const loadData = async () => {
-    const fetchedEvents = await fetchEvents();
-    setEvents(fetchedEvents);
-    setStats(calculateStats(fetchedEvents));
-    setLoading(false);
-  };
-
-  loadData();
-}, [isLoading]);
-
-
+    loadData();
+  }, [isLoading]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Ładowanie...</div>;
   }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="page-header">Dashboard</h1>
-          <p className="page-description">Overview of your event management</p>
+          <h1 className="page-header">Panel główny</h1>
+          <p className="page-description">Przegląd zarządzania wydarzeniami</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm">
             <Download className="w-4 h-4 mr-2" />
-            Export
+            Eksportuj
           </Button>
           <Button size="sm">
             <Plus className="w-4 h-4 mr-2" />
-            New Event
+            Nowe wydarzenie
           </Button>
         </div>
       </div>
 
-      {/* Search and  Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Input
-            placeholder="Search events, locations..."
+            placeholder="Szukaj wydarzeń, lokalizacji..."
             className="pl-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         </div>
         <Button variant="outline">
           <Filter className="w-4 h-4 mr-2" />
-          Filters
+          Filtry
         </Button>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Events"
+          title="Łączna liczba wydarzeń"
           value={stats.totalEvents}
           change={stats.totalEventsChange}
           changeType="positive"
@@ -120,15 +110,15 @@ useEffect(() => {
           gradient={1}
         />
         <StatCard
-          title="Active Locations"
+          title="Aktywne lokalizacje"
           value={stats.activeLocations}
-          change={`Upcoming ${stats.upcomingEvents}`}
+          change={`Nadchodzące ${stats.upcomingEvents}`}
           changeType="positive"
           icon={MapPin}
           gradient={2}
         />
         <StatCard
-          title="Total Attendees"
+          title="Łączna liczba uczestników"
           value={stats.totalAttendees}
           change={stats.totalAttendeesChange}
           changeType="positive"
@@ -136,7 +126,7 @@ useEffect(() => {
           gradient={3}
         />
         <StatCard
-          title="Growth Rate"
+          title="Wskaźnik wzrostu"
           value={stats.growthRate}
           change={stats.growthRateChange}
           changeType="positive"
@@ -145,14 +135,10 @@ useEffect(() => {
         />
       </div>
 
-      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-6">
           <RecentEventsTable events={filteredEvents} />
         </div>
-        {/* <div>
-          <MapPreview events={events} />
-        </div> */}
       </div>
     </div>
   );

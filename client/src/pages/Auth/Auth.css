@@ -173,7 +173,7 @@ html,body,#root { height: 100%; margin: 0; font-family: Inter, system-ui, Arial,
 }
 
 @media (max-width: 900px) {
-  .log_form { padding: 28px; max-width: 92%; }
+  /* .log_form { padding: 28px; max-width: 92%; } */
   .card-title { font-size: 22px; }
 }
 

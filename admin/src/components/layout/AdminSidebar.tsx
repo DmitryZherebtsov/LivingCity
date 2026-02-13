@@ -6,21 +6,33 @@ import {
   Users,
   Settings,
   BarChart3,
-  Search,
-  Bell,
+  UserCog
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserMenu } from "./UserMenu";
-
-const navItems = [
-  { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/events", icon: CalendarDays, label: "Events" },
-  { to: "/analytics", icon: BarChart3, label: "Analytics" },
-  { to: "/users", icon: Users, label: "Users" },
-  { to: "/settings", icon: Settings, label: "Settings" },
-];
+import { useAuth } from "@/context/AuthContext";
 
 export function AdminSidebar() {
+
+  const { user } = useAuth();
+
+  const isAdmin = user?.role?.toLowerCase() === "admin";
+
+  const navItems = [
+    { to: "/", icon: LayoutDashboard, label: "Panel główny" },
+    { to: "/events", icon: CalendarDays, label: "Wydarzenia" },
+
+    ...(isAdmin
+      ? [
+          { to: "/analytics", icon: BarChart3, label: "Analityka" },
+          { to: "/staff", icon: UserCog, label: "Zespół" },
+          { to: "/users", icon: Users, label: "Użytkownicy" },
+        ]
+      : []),
+
+    { to: "/settings", icon: Settings, label: "Ustawienia" },
+  ];
+
   const location = useLocation();
 
   return (
@@ -30,7 +42,7 @@ export function AdminSidebar() {
           <MapPin className="w-5 h-5 text-sidebar-primary-foreground" />
         </div>
         <span className="ml-3 font-semibold text-sidebar-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          LivingCity Admin
+          LivingCity Panel
         </span>
       </div>
 
@@ -55,21 +67,22 @@ export function AdminSidebar() {
         })}
       </nav>
 
-
       <div className="px-2 pb-4 space-y-1 border-t border-sidebar-border pt-4">
-        <button className="sidebar-link w-full">
+        {/* <button className="sidebar-link w-full">
           <Search className="w-5 h-5 flex-shrink-0" />
           <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Search
+            Szukaj
           </span>
         </button>
+
         <button className="sidebar-link w-full relative">
           <Bell className="w-5 h-5 flex-shrink-0" />
           <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Notifications
+            Powiadomienia
           </span>
           <span className="absolute top-2 left-6 w-2 h-2 bg-destructive rounded-full" />
-        </button>
+        </button> */}
+
         <UserMenu />
       </div>
     </aside>

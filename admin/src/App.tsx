@@ -14,6 +14,7 @@ import Analytics from "./pages/Analytics";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import Staff from "./pages/Staff";
 
 const queryClient = new QueryClient();
 
@@ -40,8 +41,24 @@ const App = () => (
             >
               <Route path="/" element={<Index />} />
               <Route path="/events" element={<Events />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/users" element={<Users />} />
+              <Route path="/analytics" element={
+                      <ProtectedRoute allowedRoles={["admin"]}>
+                        <Analytics />
+                      </ProtectedRoute>
+                    }/>
+
+              <Route path="/staff" element={
+                      <ProtectedRoute allowedRoles={["admin"]}>
+                        <Staff />
+                      </ProtectedRoute>
+                    }/>
+
+              <Route path="/users" element={
+                      <ProtectedRoute allowedRoles={["admin"]}>
+                        <Users />
+                      </ProtectedRoute>
+                    }/>
+
               <Route path="/settings" element={<Settings />} />
             </Route>
 

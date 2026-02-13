@@ -54,16 +54,12 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => navigate("/settings")}>
           <User className="mr-2 h-4 w-4" />
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate("/settings")}>
-          <Settings className="mr-2 h-4 w-4" />
-          Settings
+          Profil
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
           <LogOut className="mr-2 h-4 w-4" />
-          Log out
+          Wyloguj się
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
