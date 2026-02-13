@@ -46,7 +46,15 @@ export function AdminSidebar() {
         </span>
       </div>
 
+      <h4 className="h-16 flex items-center justify-center border-b border-sidebar-border capitalize text-white 
+      opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+        {user.role}
+      </h4>
+
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-hidden">
+
+
+
         {navItems.map((item) => {
           const isActive = location.pathname === item.to;
           return (

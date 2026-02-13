@@ -9,6 +9,7 @@ const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const eventImageRoutes = require('./routes/eventImageRoutes');
 const publicAuthRoutes = require('./routes/publicAuthRoutes');
+const organizerRoutes = require('./routes/organizer.routes');
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/events', eventImageRoutes);
 app.use('/api/public-auth', publicAuthRoutes);
+app.use('/api/organizers', organizerRoutes);
 
 /* ---------- folder for images ---------- */
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
