@@ -1,0 +1,63 @@
+.organizer-theme {
+  --primary: 24 95% 53%;       
+  --primary-foreground: 0 0% 100%;
+
+  --ring: 24 95% 53%;
+
+  --accent: 24 95% 95%;
+  --accent-foreground: 24 95% 30%;
+
+  --sidebar-primary: 24 95% 53%;
+  --sidebar-primary-foreground: 0 0% 100%;
+}
+
+.organizer-theme .bg-primary {
+  background-color: hsl(24 95% 53%) !important;
+}
+
+.organizer-theme .text-primary {
+  color: hsl(24 95% 53%) !important;
+}
+
+.organizer-theme .hover\:bg-primary:hover {
+  background-color: hsl(24 95% 45%) !important;
+}
+.organizer-theme .card {
+  border-color: hsl(24 95% 90%);
+}
+.organizer-theme {
+  --primary: 24 95% 53%;
+  --primary-foreground: 0 0% 100%;
+
+  --accent: 24 100% 96%;
+  --accent-foreground: 24 95% 30%;
+
+  --ring: 24 95% 53%;
+}
+
+
+.animated-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+
+background: linear-gradient(
+  120deg,
+  #ff8c39,
+  #ffbb8b,
+  #ffffff,
+  #ffbb8b,
+  #ff8c39
+);
+
+
+
+  background-size: 400% 400%;
+  animation: gradientShift 18s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

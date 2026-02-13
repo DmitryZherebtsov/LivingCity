@@ -5,12 +5,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import api from "@/lib/api";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
-  const [user, setUser] = useState<any>(null);
+  const [userSettings, setUser] = useState<any>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [profileFile, setProfileFile] = useState<File | null>(null);
+
+  const { user } = useAuth();
+  const role = user?.role?.toLowerCase();
+
+  const isAdmin = role === "admin";
+  const isModerator = role === "moderator";
+  const isOrganizer = role === "organizer";
+
+  const { toast } = useToast();
+
+
 
   useEffect(() => {
     (async () => {
@@ -33,12 +47,24 @@ export default function Settings() {
       if (profileFile) fd.append("profile_image", profileFile);
 
       await api.patch("/api/users/me", fd);
-      alert("Profil zaktualizowany");
-    } catch (err) {
+
+      toast({
+        title: "Profil zaktualizowany",
+        description: "Twoje dane zostały zapisane pomyślnie.",
+      });
+
+    } catch (err: any) {
       console.error(err);
-      alert("Błąd aktualizacji");
+
+      toast({
+        title: "Błąd aktualizacji",
+        description:
+          err?.response?.data?.message || "Nie udało się zaktualizować profilu.",
+        variant: "destructive",
+      });
     }
   };
+
   const handleDeleteAccount = async () => {
     const password = prompt("Podaj hasło aby usunąć konto:");
     if (!password) return;
@@ -47,13 +73,28 @@ export default function Settings() {
       await api.delete("/api/users/me", {
         data: { password, hard: true },
       });
-      alert("Konto usunięte");
-      window.location.href = "/";
-    } catch (err) {
+
+      toast({
+        title: "Konto usunięte",
+        description: "Twoje konto zostało trwale usunięte.",
+      });
+
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
+
+    } catch (err: any) {
       console.error(err);
-      alert("Nie udało się usunąć konta");
+
+      toast({
+        title: "Nie udało się usunąć konta",
+        description:
+          err?.response?.data?.message || "Spróbuj ponownie później.",
+        variant: "destructive",
+      });
     }
   };
+
 
   const isAdminEmail = user?.email?.toLowerCase() === "admin@example.com";
 
@@ -95,10 +136,18 @@ export default function Settings() {
             </div>
           </div>
 
-          <Button onClick={handleSaveProfile}>
+          <Button
+            onClick={handleSaveProfile}
+            className={cn(
+              "text-white",
+              isAdmin && "", 
+              isModerator && "bg-green-600 hover:bg-green-700",
+              isOrganizer && "bg-orange-500 hover:bg-orange-600"
+            )}>
             <Save className="w-4 h-4 mr-2" />
             Zapisz zmiany
           </Button>
+
         </CardContent>
       </Card>
 

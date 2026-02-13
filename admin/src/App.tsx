@@ -9,6 +9,8 @@ import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import OrganizerAuth from "./pages/OrganizerAuth";
+import OrganizerWaiting from "./pages/OrganizerWaiting";
 import Events from "./pages/Events";
 import Analytics from "./pages/Analytics";
 import Users from "./pages/Users";
@@ -16,14 +18,13 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Staff from "./pages/Staff";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-
-      <BrowserRouter> 
-
+      <BrowserRouter>
         <AuthProvider>
           <Toaster />
           <Sonner />
@@ -32,6 +33,10 @@ const App = () => (
 
             <Route path="/auth" element={<Auth />} />
 
+            {/* Organizer auth */}
+            <Route path="/organizer/auth" element={<OrganizerAuth />} />
+            <Route path="/organizer/waiting" element={<OrganizerWaiting />} />
+
             <Route
               element={
                 <ProtectedRoute>
@@ -39,36 +44,55 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route path="/" element={<Index />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/analytics" element={
-                      <ProtectedRoute allowedRoles={["admin"]}>
-                        <Analytics />
-                      </ProtectedRoute>
-                    }/>
 
-              <Route path="/staff" element={
-                      <ProtectedRoute allowedRoles={["admin"]}>
-                        <Staff />
-                      </ProtectedRoute>
-                    }/>
+            <Route path="/" element={
+                <ProtectedRoute allowedRoles={["admin", "moderator"]}>
+                  <Index />
+                </ProtectedRoute>
+              } />
 
-              <Route path="/users" element={
-                      <ProtectedRoute allowedRoles={["admin"]}>
-                        <Users />
-                      </ProtectedRoute>
-                    }/>
+            <Route path="/events" element={
+                 <ProtectedRoute allowedRoles={["admin", "moderator"]}>
+                  <Events />
+                </ProtectedRoute>
+                } />
+
+            <Route
+                path="/analytics"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <Analytics />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/staff"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <Staff />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/users"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <Users />
+                  </ProtectedRoute>
+                }
+              />
 
               <Route path="/settings" element={<Settings />} />
             </Route>
 
+          
             <Route path="*" element={<NotFound />} />
 
           </Routes>
         </AuthProvider>
-
       </BrowserRouter>
-
     </TooltipProvider>
   </QueryClientProvider>
 );

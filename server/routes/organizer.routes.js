@@ -3,9 +3,11 @@ const router = express.Router();
 const organizerController = require('../controllers/organizer.controller');
 const ROLES = require('../config/roles');
 
-router.post('/register', organizerController.register);
 const { requireAuth } = require('../middleware/auth.middleware');
 const { requireRole } = require('../middleware/role.middleware');
+
+
+router.post('/register', organizerController.register);
 
 router.get('/pending', requireAuth, requireRole([ROLES.ADMIN]), organizerController.getPending);
 

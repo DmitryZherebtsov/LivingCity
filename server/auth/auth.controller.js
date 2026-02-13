@@ -36,15 +36,17 @@ const login = async (req, res) => {
       expires: new Date(saved.expires_at)
     });
 
-    return res.json({
+   return res.json({
       accessToken,
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role_name
+        role: user.role_name,
+        organizer_status: user.organizer_status || null 
       }
     });
+
 
   } catch (err) {
     console.error('Login error', err);
@@ -70,10 +72,8 @@ const refresh = async (req, res) => {
     const found = (await pool.query(q, [tokenHash])).rows[0];
     if (!found) return res.status(401).json({ message: 'Invalid refresh token' });
 
-    // revoke old
     await pool.query('UPDATE refresh_tokens SET revoked = true WHERE id = $1', [found.id]);
 
-    // issue new access token with roleName
     const accessToken = generateAccessToken({
       sub: found.user_id,
       email: found.email,

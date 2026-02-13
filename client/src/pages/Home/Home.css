@@ -20,7 +20,6 @@
   );
   background-size: 400% 400%;
   animation: gradientShift 18s ease infinite;
-  
 }
 @keyframes gradientShift {
   0% { background-position: 0% 50%; }

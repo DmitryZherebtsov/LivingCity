@@ -13,10 +13,14 @@ import { UserMenu } from "./UserMenu";
 import { useAuth } from "@/context/AuthContext";
 
 export function AdminSidebar() {
-
   const { user } = useAuth();
+  const location = useLocation();
 
-  const isAdmin = user?.role?.toLowerCase() === "admin";
+  const role = user?.role?.toLowerCase();
+
+  const isAdmin = role === "admin";
+  const isModerator = role === "moderator";
+  const isOrganizer = role === "organizer";
 
   const navItems = [
     { to: "/", icon: LayoutDashboard, label: "Panel główny" },
@@ -33,37 +37,77 @@ export function AdminSidebar() {
     { to: "/settings", icon: Settings, label: "Ustawienia" },
   ];
 
-  const location = useLocation();
-
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-16 bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 hover:w-56 group">
+    <aside
+      className={cn(
+        "fixed left-0 top-0 z-40 h-screen w-16 border-r flex flex-col transition-all duration-300 hover:w-56 group",
+        isAdmin && "bg-sidebar border-sidebar-border",
+        isModerator && "bg-green-950 border-green-900",
+        isOrganizer && "bg-orange-950 border-orange-900"
+      )}>
+
       <div className="h-16 flex items-center justify-center border-b border-sidebar-border">
-        <div className="w-9 h-9 rounded-xl bg-sidebar-primary flex items-center justify-center">
-          <MapPin className="w-5 h-5 text-sidebar-primary-foreground" />
+        <div
+          className={cn(
+            "w-9 h-9 rounded-xl flex items-center justify-center",
+            isAdmin && "bg-sidebar-primary",
+            isModerator && "bg-green-600",
+            isOrganizer && "bg-orange-500"
+          )}
+        >
+          <MapPin
+            className={cn(
+              "w-5 h-5",
+              isAdmin && "text-sidebar-primary-foreground",
+              (isModerator || isOrganizer) && "text-white"
+            )}
+          />
         </div>
-        <span className="ml-3 font-semibold text-sidebar-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+
+        <span
+          className={cn(
+            "ml-3 font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap",
+            isAdmin && "text-sidebar-accent-foreground",
+            isModerator && "text-green-200",
+            isOrganizer && "text-orange-200"
+          )}
+        >
           LivingCity Panel
         </span>
       </div>
 
-      <h4 className="h-16 flex items-center justify-center border-b border-sidebar-border capitalize text-white 
-      opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-        {user.role}
+      <h4
+        className={cn(
+          "h-14 flex items-center justify-center border-b capitalize font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap",
+          isAdmin && "text-white border-sidebar-border",
+          isModerator && "text-green-300 border-green-900",
+          isOrganizer && "text-orange-300 border-orange-900"
+        )}
+      >
+        {role}
       </h4>
 
+
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-hidden">
-
-
-
         {navItems.map((item) => {
           const isActive = location.pathname === item.to;
+
           return (
             <NavLink
               key={item.to}
               to={item.to}
               className={cn(
-                "sidebar-link",
-                isActive && "sidebar-link-active"
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
+                "opacity-80 hover:opacity-100",
+                isAdmin && "text-sidebar-foreground hover:bg-sidebar-accent",
+                isModerator && "text-green-200 hover:bg-green-900",
+                isOrganizer && "text-orange-200 hover:bg-orange-900",
+                isActive &&
+                  (isAdmin
+                    ? "bg-sidebar-accent text-sidebar-primary font-medium"
+                    : isModerator
+                    ? "bg-green-800 text-white font-medium"
+                    : "bg-orange-800 text-white font-medium")
               )}
             >
               <item.icon className="w-5 h-5 flex-shrink-0" />
@@ -75,22 +119,24 @@ export function AdminSidebar() {
         })}
       </nav>
 
+      {/* 
+      <button className="sidebar-link w-full">
+        <Search className="w-5 h-5 flex-shrink-0" />
+        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+          Szukaj
+        </span>
+      </button>
+
+      <button className="sidebar-link w-full relative">
+        <Bell className="w-5 h-5 flex-shrink-0" />
+        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+          Powiadomienia
+        </span>
+        <span className="absolute top-2 left-6 w-2 h-2 bg-destructive rounded-full" />
+      </button> 
+      */}
+
       <div className="px-2 pb-4 space-y-1 border-t border-sidebar-border pt-4">
-        {/* <button className="sidebar-link w-full">
-          <Search className="w-5 h-5 flex-shrink-0" />
-          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Szukaj
-          </span>
-        </button>
-
-        <button className="sidebar-link w-full relative">
-          <Bell className="w-5 h-5 flex-shrink-0" />
-          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Powiadomienia
-          </span>
-          <span className="absolute top-2 left-6 w-2 h-2 bg-destructive rounded-full" />
-        </button> */}
-
         <UserMenu />
       </div>
     </aside>

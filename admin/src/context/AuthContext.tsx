@@ -8,6 +8,7 @@ export interface UserProfile {
   role: "admin" | "moderator" | "viewer";
   avatar?: string;
   createdAt?: string;
+  organizer_status?: string | null;
 }
 
 interface AuthContextType {
@@ -64,10 +65,9 @@ useEffect(() => {
       if (!token || !profile) {
         return { error: "Invalid server response" };
       }
-      // keep token in state
       setAccessToken(token);
       setAuthToken(token);
-      // user profile 
+      
       setUser(profile);
       localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
       return {};
