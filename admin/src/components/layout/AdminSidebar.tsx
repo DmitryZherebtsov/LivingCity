@@ -6,7 +6,8 @@ import {
   Users,
   Settings,
   BarChart3,
-  UserCog
+  UserCog,
+  CalendarPlus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserMenu } from "./UserMenu";
@@ -32,6 +33,10 @@ export function AdminSidebar() {
           { to: "/staff", icon: UserCog, label: "Zespół" },
           { to: "/users", icon: Users, label: "Użytkownicy" },
         ]
+      : []),
+    
+    ...(isOrganizer
+      ? [{ to: "/organizer/create-event", icon: CalendarPlus, label: "Stwórz wydarzenie" }]
       : []),
 
     { to: "/settings", icon: Settings, label: "Ustawienia" },

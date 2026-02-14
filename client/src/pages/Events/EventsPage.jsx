@@ -84,124 +84,151 @@ export default function EventsPage() {
 
   return (
     <div className="events-page">
-      <div className="events-header">
-        <div>
-          <h1 className="page-title">Events</h1>
-          <p className="page-sub">Browse and manage events from API</p>
-        </div>
-        <div>
-          <Link to="/organizer"><button className="create-btn">＋ Create Event</button></Link>
-        </div>
+    <div className="events-header">
+      <div>
+        <h1 className="page-title">Wydarzenia</h1>
+        <p className="page-sub">Przeglądaj i zarządzaj wydarzeniami z API</p>
+      </div>
+      <div>
+        <Link to="/organizer">
+          <button className="create-btn">＋ Utwórz wydarzenie</button>
+        </Link>
+      </div>
+    </div>
+
+    <div className="controls">
+      <div className="search">
+        <input
+          placeholder="Szukaj po tytule, mieście, organizatorze, typie..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
 
-      <div className="controls">
-        <div className="search">
-          <input
-            placeholder="Search by title, city, organizer, type..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+      <div className="filters">
+        {eventTypes.length === 0 ? (
+          <div className="muted">Brak filtrów typu</div>
+        ) : (
+          eventTypes.map((t) => (
+            <button
+              key={t}
+              className={`type-btn ${selectedTypes.includes(t) ? "active" : ""}`}
+              onClick={() => toggleType(t)}
+            >
+              {t}
+            </button>
+          ))
+        )}
+      </div>
+    </div>
 
-        <div className="filters">
-          {eventTypes.length === 0 ? (
-            <div className="muted">No type filters</div>
-          ) : (
-            eventTypes.map((t) => (
-              <button
-                key={t}
-                className={`type-btn ${selectedTypes.includes(t) ? "active" : ""}`}
-                onClick={() => toggleType(t)}
-              >
-                {t}
-              </button>
-            ))
+    {loading ? (
+      <div className="muted">Ładowanie wydarzeń…</div>
+    ) : error ? (
+      <div className="muted">Błąd podczas ładowania wydarzeń</div>
+    ) : (
+      <>
+        <div className="cards-grid" role="list">
+          {pageItems.map((ev) => (
+            <article key={ev.id} className="card" role="listitem">
+              <div className="card-image-wrap">
+                {getEventImage(ev) ? (
+                  <img src={getEventImage(ev)} alt={ev.title} className="card-image" />
+                ) : (
+                  <div className="card-image placeholder">Brak zdjęcia</div>
+                )}
+                <div className="card-badge">{ev.event_type || "—"}</div>
+              </div>
+
+              <div className="card-body">
+                <h2 className="card-title">{ev.title}</h2>
+                <p className="card-desc">{truncate(ev.description)}</p>
+
+                <div className="card-meta">
+                  <div className="meta-row">
+                    <MapPin className="meta-icon" size={16} aria-hidden="true" />
+                    <span className="muted">{ev.city || ev.address || "—"}</span>
+                  </div>
+
+                  <div className="meta-row">
+                    <Calendar className="meta-icon" size={16} aria-hidden="true" />
+                    <span className="muted">
+                      {formatDateRange(ev.start_time, ev.end_time)}
+                    </span>
+                  </div>
+
+                  <div className="meta-row">
+                    <Users className="meta-icon" size={16} aria-hidden="true" />
+                    <span className="muted">
+                      {(ev.visitor_count ?? 0).toLocaleString()} uczestników
+                    </span>
+                  </div>
+                </div>
+
+                <div className="card-actions">
+                  <span className={`ticket-badge ${ev.is_free ? "free" : "paid"}`}>
+                    {ev.is_free ? "Bezpłatne" : "Płatne"}
+                  </span>
+                  <div className="spacer" />
+                  <a className="btn-ghost" href={`/events/${ev.id}`}>
+                    Zobacz więcej →
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+
+          {pageItems.length === 0 && (
+            <div className="no-results muted">Nie znaleziono wydarzeń</div>
           )}
         </div>
-      </div>
 
-      {loading ? (
-        <div className="muted">Loading events…</div>
-      ) : error ? (
-        <div className="muted">Error loading events</div>
-      ) : (
-        <>
-          <div className="cards-grid" role="list">
-            {pageItems.map((ev) => (
-              <article key={ev.id} className="card" role="listitem">
-                <div className="card-image-wrap">
-                  {getEventImage(ev) ? (
-                    <img src={getEventImage(ev)} alt={ev.title} className="card-image" />
-                  ) : (
-                    <div className="card-image placeholder">No image</div>
-                  )}
-                  <div className="card-badge">{ev.event_type || "—"}</div>
-                </div>
-
-                <div className="card-body">
-                  <h2 className="card-title">{ev.title}</h2>
-                  <p className="card-desc">{truncate(ev.description)}</p>
-
-                  <div className="card-meta">
-                    <div className="meta-row">
-                      <MapPin className="meta-icon" size={16} aria-hidden="true" />
-                      <span className="muted">{ev.city || ev.address || "—"}</span>
-                    </div>
-
-                    <div className="meta-row">
-                      <Calendar className="meta-icon" size={16} aria-hidden="true" />
-                      <span className="muted">{formatDateRange(ev.start_time, ev.end_time)}</span>
-                    </div>
-
-                    <div className="meta-row">
-                      <Users className="meta-icon" size={16} aria-hidden="true" />
-                      <span className="muted">{(ev.visitor_count ?? 0).toLocaleString()} going</span>
-                    </div>
-                  </div>
-
-                  <div className="card-actions">
-                    <span className={`ticket-badge ${ev.is_free ? "free" : "paid"}`}>
-                      {ev.is_free ? "Free" : ev.capacity ? "Paid" : "Paid"}
-                    </span>
-                    <div className="spacer" />
-                    <a className="btn-ghost" href={`/events/${ev.id}`}>
-                      Learn More →
-                    </a>
-                  </div>
-                </div>
-              </article>
-            ))}
-
-            {pageItems.length === 0 && (
-              <div className="no-results muted">No events found</div>
-            )}
+        <div className="pagination-row">
+          <div className="pagination-info">
+            Wyświetlanie <strong>{pageItems.length}</strong> z{" "}
+            <strong>{filtered.length}</strong> wyników
           </div>
 
-          <div className="pagination-row">
-            <div className="pagination-info">
-              Showing <strong>{pageItems.length}</strong> of <strong>{filtered.length}</strong> results
-            </div>
+          <div className="pagination-controls">
+            <button
+              className="page-btn"
+              onClick={() => { setPage(1); }}
+              disabled={page === 1}
+            >
+              «
+            </button>
 
-            <div className="pagination-controls">
-              <button className="page-btn" onClick={() => { setPage(1); }} disabled={page === 1}>
-                «
-              </button>
-              <button className="page-btn" onClick={gotoPrev} disabled={page === 1}>
-                Previous
-              </button>
-              <span className="page-indicator">
-                Page <strong>{page}</strong> of <strong>{totalPages}</strong>
-              </span>
-              <button className="page-btn" onClick={gotoNext} disabled={page === totalPages}>
-                Next
-              </button>
-              <button className="page-btn" onClick={() => { setPage(totalPages); }} disabled={page === totalPages}>
-                »
-              </button>
-            </div>
+            <button
+              className="page-btn"
+              onClick={gotoPrev}
+              disabled={page === 1}
+            >
+              Poprzednia
+            </button>
+
+            <span className="page-indicator">
+              Strona <strong>{page}</strong> z <strong>{totalPages}</strong>
+            </span>
+
+            <button
+              className="page-btn"
+              onClick={gotoNext}
+              disabled={page === totalPages}
+            >
+              Następna
+            </button>
+
+            <button
+              className="page-btn"
+              onClick={() => { setPage(totalPages); }}
+              disabled={page === totalPages}
+            >
+              »
+            </button>
           </div>
-        </>
-      )}
-    </div>
+        </div>
+      </>
+    )}
+  </div>
   );
 }

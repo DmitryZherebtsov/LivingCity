@@ -27,6 +27,10 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+  will-change: transform;
 }
 .sidebar-root .mapboxgl-ctrl-geocoder {
   width: 100%;
@@ -399,3 +403,55 @@
 .event-type-tag[data-type="art"]        { --tag-color: 250, 204, 21; }
 .event-type-tag[data-type="standup"]    { --tag-color: 249, 115, 22; }
 .event-type-tag[data-type="other"]      { --tag-color: 156, 163, 175; }
+
+.sidebar-toggle {
+  display: none;
+}
+
+@media (max-width: 900px) {
+
+  .sidebar-root {
+    width: 280px;
+    min-width: 280px;
+  }
+
+  .sidebar-root.closed {
+    transform: translateX(-100%);
+  }
+
+  .sidebar-root.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    display: flex;
+    position: absolute;
+    top: 20px;
+
+    right: -22px;
+
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(15, 23, 42, 0.95);
+    color: #f8fafc;
+
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transition: 0.2s ease;
+  }
+
+  .sidebar-toggle:hover {
+    transform: scale(1.08);
+  }
+
+  .sidebar-root.closed .sidebar-toggle {
+    right: -28px;
+  }
+}

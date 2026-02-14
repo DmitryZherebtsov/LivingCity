@@ -4,9 +4,11 @@ import bgImage from "../../assets/working_space.jpg";
 import promoteIcon from "../../assets/man.svg";
 import statsIcon from "../../assets/folder_stats.svg";
 import cultureIcon from "../../assets/man_stats.svg";
+import Footer from "../../components/Footer/Footer";
 
 export default function OrganizerPage() {
   return (
+    <>
     <div className="organizer-page">
       <section
         className="hero"
@@ -81,5 +83,8 @@ export default function OrganizerPage() {
         </div>
       </section>
     </div>
+
+    <Footer />
+  </>
   );
 }

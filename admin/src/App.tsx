@@ -17,6 +17,7 @@ import Users from "./pages/Users";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Staff from "./pages/Staff";
+import CreateEventPage from "./pages/CreateEventPage";
 
 
 const queryClient = new QueryClient();
@@ -83,6 +84,14 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
+
+              <Route
+                path="/organizer/create-event"
+                element={
+                  <ProtectedRoute allowedRoles={["organizer"]}>
+                    <CreateEventPage />
+                  </ProtectedRoute>
+                }/>
 
               <Route path="/settings" element={<Settings />} />
             </Route>

@@ -161,6 +161,52 @@
   height: 30px;
 }
 
+.mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 64px;
+  right: -100%;
+  width: 260px;
+  height: calc(100vh - 64px);
+  background: #0f172a;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 10px;
+  transition: right 0.3s ease;
+  z-index: 50;
+  border-left: 1px solid rgba(255,255,255,0.08);
+}
+
+.mobile-menu.open {
+  right: 0;
+}
+
+.mobile-link {
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.mobile-link:hover {
+  background: rgba(255,255,255,0.06);
+  color: white;
+}
+
+.mobile-link.active {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
 
 @media (max-width: 880px) {
   .header-nav {

@@ -2,6 +2,7 @@ import './Sidebar.css';
 import { useEffect, useRef, useState } from "react";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import mapboxgl from "mapbox-gl";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Sidebar = ({ 
   map, 
@@ -19,6 +20,7 @@ const Sidebar = ({
   const geocoderRef = useRef(null); /// Reference to the geocoder instance
   const containerElRef = useRef(null); // Reference to the geocoder control element
   const [imgError, setImgError] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
    
   const EVENT_TYPES = [
     "concert",
@@ -120,7 +122,16 @@ const Sidebar = ({
 
 
   return (
-    <aside className="sidebar-root" lang="pl">
+    <aside
+  className={`sidebar-root ${isOpen ? "open" : "closed"}`}
+  lang="pl"
+>
+
+
+      <button className="sidebar-toggle"
+        onClick={() => setIsOpen(prev => !prev)} >
+        {isOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+      </button>
 
       <div className="sidebar-search" ref={searchRef}>  </div>
 
