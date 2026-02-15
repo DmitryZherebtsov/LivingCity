@@ -11,12 +11,13 @@ const eventImageRoutes = require('./routes/eventImageRoutes');
 const publicAuthRoutes = require('./routes/publicAuthRoutes');
 const organizerAuthRoutes = require('./routes/organizerAuthRoutes');
 const adminOrganizationRoutes = require("./routes/adminOrganization.routes");
+const organizerRoutes = require('./routes/organizerRoutes');
 
 const app = express();
 
 const path = require('path');
 
-/* ---------- cors for links ---------- */
+/*  cors for links  */
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
@@ -29,11 +30,11 @@ app.use(cors({
   credentials: true,
 }));
 
-/* ---------- BODY PARSER ---------- */
+/*  BODY PARSER  */
 app.use(express.json());
 app.use(cookieParser());
 
-/* ---------- routes  ---------- */
+/* routes  */
 app.use('/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/users', userRoutes);
@@ -41,16 +42,16 @@ app.use('/api/events', eventImageRoutes);
 app.use('/api/public-auth', publicAuthRoutes);
 app.use('/api/organizer-auth', organizerAuthRoutes);
 app.use("/api/admin", adminOrganizationRoutes);
+app.use('/api/organizer', organizerRoutes);
 
-
-/* ---------- folder for images ---------- */
+/* folder for images  */
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
   res.send('LivingCity API is running');
 });
 
-/* ---------- DB CHECK ---------- */
+/* DB CHECK*/
 pool.query('SELECT 1')
   .then(() => console.log('PostgreSQL connected'))
   .catch(err => {
@@ -58,7 +59,7 @@ pool.query('SELECT 1')
     process.exit(1);
   });
 
-/* ---------- SERVER ---------- */
+/* SERVER*/
 const PORT = process.env.PORT || 3000 ;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

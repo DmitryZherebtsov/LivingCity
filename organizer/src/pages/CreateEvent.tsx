@@ -144,7 +144,7 @@ const CreateEvent = () => {
       console.log("Created event", created);
 
       toast({ title: "Wysłano zgłoszenie", description: "Wydarzenie zostało wysłane do zatwierdzenia." });
-      navigate("/organizer/waiting", { replace: true });
+      navigate("/organizer/event-waiting", { replace: true });
     } catch (err: any) {
       toast({ title: "Błąd tworzenia wydarzenia", description: err?.response?.data?.error || err.message, variant: "destructive" });
     } finally {
@@ -157,119 +157,216 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="mx-auto max-w-3xl p-4">
-      <Card>
+    <div className="mx-auto max-w-6xl p-6">
+      <Card className="shadow-2xl border border-gray-800/20 rounded-2xl">
         <CardHeader>
           <CardTitle>Stwórz Wydarzenie</CardTitle>
         </CardHeader>
+
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label>Tytuł</Label>
-              <Input required value={form.title} onChange={(e) => update("title", e.target.value)} />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
 
-            <div className="space-y-2">
-              <Label>Opis</Label>
-              <Textarea required value={form.description} onChange={(e) => update("description", e.target.value)} />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2 space-y-2">
+                <Label>Tytuł</Label>
+                <Input
+                  required
+                  value={form.title}
+                  onChange={(e) => update("title", e.target.value)}
+                />
+              </div>
 
-            <div className="grid grid-cols-2 gap-4">
+              <div className="md:col-span-2 space-y-2">
+                <Label>Opis</Label>
+                <Textarea
+                  required
+                  className="min-h-[100px]"
+                  value={form.description}
+                  onChange={(e) => update("description", e.target.value)}
+                />
+              </div>
+
               <div>
                 <Label>Data i godzina (początek)</Label>
-                <Input type="datetime-local" required value={form.start_time} onChange={(e) => update("start_time", e.target.value)} />
+                <Input
+                  type="datetime-local"
+                  required
+                  value={form.start_time}
+                  onChange={(e) => update("start_time", e.target.value)}
+                />
               </div>
+
               <div>
                 <Label>Data i godzina (koniec)</Label>
-                <Input type="datetime-local" value={form.end_time} onChange={(e) => update("end_time", e.target.value)} />
+                <Input
+                  type="datetime-local"
+                  value={form.end_time}
+                  onChange={(e) => update("end_time", e.target.value)}
+                />
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Miasto</Label>
-                <Input value={form.city} onChange={(e) => update("city", e.target.value)} />
+                <Input
+                  value={form.city}
+                  onChange={(e) => update("city", e.target.value)}
+                />
               </div>
+
               <div>
                 <Label>Adres</Label>
-                <Input value={form.address} onChange={(e) => update("address", e.target.value)} />
+                <Input
+                  value={form.address}
+                  onChange={(e) => update("address", e.target.value)}
+                />
               </div>
+
             </div>
 
+
             <div>
-              <Label>Wybierz pozycję na mapie (kliknij aby ustawić) — lub wpisz współrzędne</Label>
-              <div className="rounded overflow-hidden border">
+              <Label>
+                Wybierz pozycję na mapie (kliknij aby ustawić)
+              </Label>
+
+              <div className="rounded-xl overflow-hidden border shadow-lg mt-2">
                 {isLoaded ? (
-                  <GoogleMap mapContainerStyle={mapContainerStyle} center={marker ?? centerDefault} zoom={marker ? 14 : 6} onClick={onMapClick}>
+                  <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    center={marker ?? centerDefault}
+                    zoom={marker ? 14 : 6}
+                    onClick={onMapClick}
+                  >
                     {marker && <Marker position={marker} />}
                   </GoogleMap>
                 ) : (
-                  <div className="p-4 text-sm text-muted-foreground">Mapa niedostępna — wpisz współrzędne ręcznie.</div>
+                  <div className="p-4 text-sm text-muted-foreground">
+                    Mapa niedostępna — wpisz współrzędne ręcznie.
+                  </div>
                 )}
               </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>Longitude (lon)</Label>
-                <Input required value={form.lon} onChange={(e) => update("lon", e.target.value)} placeholder="e.g. 21.0122" />
+                <Input
+                  required
+                  value={form.lon}
+                  onChange={(e) => update("lon", e.target.value)}
+                />
               </div>
+
               <div>
                 <Label>Latitude (lat)</Label>
-                <Input required value={form.lat} onChange={(e) => update("lat", e.target.value)} placeholder="e.g. 52.2297" />
+                <Input
+                  required
+                  value={form.lat}
+                  onChange={(e) => update("lat", e.target.value)}
+                />
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Pojemność</Label>
-                <Input type="number" min="1" value={form.capacity} onChange={(e) => update("capacity", e.target.value)} />
+                <Label>Pojemność </Label>
+                <Input
+                  type="number"
+                  min="1"
+                  value={form.capacity}
+                  onChange={(e) => update("capacity", e.target.value)}
+                />
               </div>
+
               <div>
                 <Label>Typ wydarzenia</Label>
-                <Input value={form.event_type} onChange={(e) => update("event_type", e.target.value)} />
+                <Input
+                  value={form.event_type}
+                  onChange={(e) => update("event_type", e.target.value)}
+                />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Link do wydarzenia (url)</Label>
-              <Input value={form.url} onChange={(e) => update("url", e.target.value)} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Organizator (nazwa)</Label>
-              <Input value={form.organizer} onChange={(e) => update("organizer", e.target.value)} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Główne zdjęcie (oryginał, max 10MB)</Label>
-              <div className="flex items-center gap-3">
-                <input accept="image/*" type="file" onChange={(e) => handleFirstImage(e.target.files?.[0] ?? undefined)} />
-                {firstImage && <img src={firstImage.preview} className="h-16 rounded" alt="preview" />}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Dodatkowe zdjęcia (przetworzone)</Label>
               <div>
-                <input ref={fileInputRef} accept="image/*" type="file" multiple onChange={(e) => handleOtherImagesAdd(e.target.files)} />
-                <div className="flex gap-2 mt-2 flex-wrap">
-                  {otherImages.map((it, idx) => (
-                    <div key={idx} className="relative">
-                      <img src={it.preview} className="h-16 rounded" alt={`img-${idx}`} />
-                      <button type="button" onClick={() => removeOtherImage(idx)} className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow">✕</button>
-                    </div>
-                  ))}
+                <Label>Link do wydarzenia</Label>
+                <Input
+                  value={form.url}
+                  onChange={(e) => update("url", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label>Organizator</Label>
+                <Input
+                  value={form.organizer}
+                  onChange={(e) => update("organizer", e.target.value)}
+                />
+              </div>
+
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              <div className="space-y-2">
+                <Label>Główne zdjęcie</Label>
+                <div className="flex items-center gap-3 border rounded-xl p-3 shadow-md">
+                  <input
+                    accept="image/*"
+                    type="file"
+                    onChange={(e) =>
+                      handleFirstImage(e.target.files?.[0] ?? undefined)
+                    }
+                  />
+                  {firstImage && (
+                    <img
+                      src={firstImage.preview}
+                      className="h-20 rounded-xl shadow"
+                      alt="preview"
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Dodatkowe zdjęcia</Label>
+                <div className="border rounded-xl p-3 shadow-md">
+                  <input
+                    ref={fileInputRef}
+                    accept="image/*"
+                    type="file"
+                    multiple
+                    onChange={(e) =>
+                      handleOtherImagesAdd(e.target.files)
+                    }
+                  />
+
+                  <div className="flex gap-3 mt-3 flex-wrap">
+                    {otherImages.map((it, idx) => (
+                      <div key={idx} className="relative">
+                        <img
+                          src={it.preview}
+                          className="h-20 rounded-xl shadow"
+                          alt={`img-${idx}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeOtherImage(idx)}
+                          className="absolute -top-2 -right-2 bg-white rounded-full px-2 shadow-lg"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-3 mt-4">
-              <Button className="inline-flex items-center bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-500 hover:to-green-600 text-white shadow-md px-4 py-2" type="submit" disabled={loading}>
+            <div className="pt-4">
+              <Button
+                className="w-full bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-500 hover:to-green-600 text-white shadow-xl py-3"
+                type="submit"
+                disabled={loading}
+              >
                 <Check className="w-4 h-4 mr-2" />
                 {loading ? "Wysyłam..." : "Wyślij do weryfikacji"}
               </Button>
             </div>
+
           </form>
         </CardContent>
       </Card>

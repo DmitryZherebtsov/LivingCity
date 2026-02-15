@@ -11,6 +11,6 @@ router.post('/', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), contr
 router.get('/', controller.list);
 router.get('/:id', controller.getOne);
 router.put('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.update);
-router.delete('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.remove);
+router.delete('/:id', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), controller.remove);
 
 module.exports = router;

@@ -13,6 +13,6 @@ const upload = multer({
 
 router.post('/:id/images', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), upload.array('images', 10), uploadImages);
 router.get('/:id/images', listImages);
-router.delete('/images/:id', requireAuth, requireRole([ROLES.ADMIN]), deleteImage);
+router.delete('/images/:imageId', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), deleteImage);
 
 module.exports = router;

@@ -33,7 +33,6 @@ function OrganizerDashboard() {
   const [events, setEvents] = useState<Event[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (isLoading) return;
 
@@ -97,20 +96,20 @@ function OrganizerDashboard() {
             gradient={1}
           />
           <StatCard
-            title="Zatwierdzone"
-            value={String(approved)}
-            change="Widoczne na mapie"
-            changeType="positive"
-            icon={TrendingUp}
-            gradient={2}
-          />
-          <StatCard
             title="Oczekujące"
             value={String(pending)}
             change="Czekają na moderację"
             changeType="neutral"
             icon={Clock}
             gradient={3}
+          />
+          <StatCard
+            title="Zatwierdzone"
+            value={String(approved)}
+            change="Widoczne na mapie"
+            changeType="positive"
+            icon={TrendingUp}
+            gradient={2}
           />
           <StatCard
             title="Uczestnicy"
@@ -175,7 +174,7 @@ function OrganizerDashboard() {
                     size="sm"
                     variant="outline"
                     className="shadow-sm"
-                    onClick={() => navigate(`/events/${event.id}`)}
+                    onClick={() => navigate(`/events/${event.id}/edit`)}
                   >
                     Szczegóły
                   </Button>

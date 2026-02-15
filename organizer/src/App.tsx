@@ -10,6 +10,8 @@ import Settings from "./pages/Settings";
 import AppLayout from "./components/AppLayout";
 import NotFound from "./pages/NotFound";
 import OrganizerWaiting from "./pages/OrganizerWaiting";
+import EventWaiting from "./pages/EventWaiting";
+import EventEdit from "./pages/EventEdit";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,8 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/events/create" element={<CreateEvent />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/organizer/event-waiting" element={<EventWaiting />} />
+            <Route path="/events/:id/edit" element={<EventEdit />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

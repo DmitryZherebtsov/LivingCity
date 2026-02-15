@@ -100,7 +100,7 @@ const listImages = async (req, res) => {
 
 const deleteImage = async (req, res) => {
   try {
-    const id = Number(req.params.id);
+    const id = Number(req.params.imageId);
     if (Number.isNaN(id)) return res.status(400).json({ error: 'invalid id' });
 
     const img = await eventImageModel.removeImage(id);

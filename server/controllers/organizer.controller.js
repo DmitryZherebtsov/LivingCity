@@ -1,4 +1,4 @@
-const organizerService = require('../services/organizer.service');
+const organizerService = require('../services/organization.service');
 
 async function register(req, res) {
   try {

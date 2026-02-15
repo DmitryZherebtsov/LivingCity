@@ -16,7 +16,7 @@ function hashToken(token) {
 
 function refreshTokenExpiryDate() {
   const days = REFRESH_TOKEN_EXPIRES_DAYS;
-  const exp = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+  const exp = new Date(Date.now() + days * 24 * 60 * 60 * 1000); 
   return exp;
 }
 
