@@ -5,6 +5,8 @@ const { requireAuth } = require('../middleware/auth.middleware');
 const { requireRole } = require('../middleware/role.middleware');
 const ROLES = require('../config/roles');
 
+router.get('/my', requireAuth, requireRole(['organizer']), controller.getMyEvents);
+
 router.post('/', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), controller.create);
 router.get('/', controller.list);
 router.get('/:id', controller.getOne);

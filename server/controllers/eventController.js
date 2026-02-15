@@ -77,6 +77,42 @@ const getOne = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+const getMyEvents = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const r = await pool.query(
+      `SELECT organization_id 
+       FROM organizators 
+       WHERE user_id = $1 
+       LIMIT 1`,
+      [req.user.id]
+    );
+
+    if (!r.rows.length) {
+      return res.json([]);
+    }
+
+    const organizationId = r.rows[0].organization_id;
+
+    const events = await pool.query(
+      `SELECT *
+       FROM events
+       WHERE organization_id = $1
+       ORDER BY created_at DESC`,
+      [organizationId]
+    );
+
+    res.json(events.rows);
+  } catch (err) {
+    console.error("getMyEvents error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
 
 const update = async (req, res) => {
   try {
@@ -125,4 +161,5 @@ module.exports = {
   update,
   remove,
   incrementVisitors,
+  getMyEvents
 };

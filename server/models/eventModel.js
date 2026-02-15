@@ -39,7 +39,7 @@ const createEvent = async (data) => {
 
 
 
-const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km, status } = {}) => {
+const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km, status, includeAllStatuses = false } = {}) => {
   const params = [];
   let where = 'WHERE 1=1';
 
@@ -60,6 +60,17 @@ const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km, 
     params.push(`%${qtext}%`);
     where += ` AND (e.title ILIKE $${params.length} OR e.description ILIKE $${params.length} OR e.organizer ILIKE $${params.length})`;
   }
+
+  if (organization_id) {
+    params.push(organization_id);
+    where += ` AND e.organization_id = $${params.length}`;
+  }
+
+  if (!includeAllStatuses) {
+    params.push('approved');
+    where += ` AND e.status = $${params.length}`;
+  }
+
 
   if (lat !== undefined && lon !== undefined && radius_km !== undefined) {
     params.push(lat, lon, radius_km);
