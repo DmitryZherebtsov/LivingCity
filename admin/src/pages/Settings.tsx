@@ -20,7 +20,6 @@ export default function Settings() {
 
   const isAdmin = role === "admin";
   const isModerator = role === "moderator";
-  const isOrganizer = role === "organizer";
 
   const { toast } = useToast();
 
@@ -141,8 +140,7 @@ export default function Settings() {
             className={cn(
               "text-white",
               isAdmin && "", 
-              isModerator && "bg-green-600 hover:bg-green-700",
-              isOrganizer && "bg-orange-500 hover:bg-orange-600"
+              isModerator && "bg-green-600 hover:bg-green-700"
             )}>
             <Save className="w-4 h-4 mr-2" />
             Zapisz zmiany

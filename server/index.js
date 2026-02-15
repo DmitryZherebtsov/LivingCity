@@ -9,7 +9,8 @@ const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const eventImageRoutes = require('./routes/eventImageRoutes');
 const publicAuthRoutes = require('./routes/publicAuthRoutes');
-const organizerRoutes = require('./routes/organizer.routes');
+const organizerAuthRoutes = require('./routes/organizerAuthRoutes');
+const adminOrganizationRoutes = require("./routes/adminOrganization.routes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:8080',
+  'http://localhost:8081',
 ];
 
 app.use(cors({
@@ -37,7 +39,9 @@ app.use('/api/events', eventRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/events', eventImageRoutes);
 app.use('/api/public-auth', publicAuthRoutes);
-app.use('/api/organizers', organizerRoutes);
+app.use('/api/organizer-auth', organizerAuthRoutes);
+app.use("/api/admin", adminOrganizationRoutes);
+
 
 /* ---------- folder for images ---------- */
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

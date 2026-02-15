@@ -28,7 +28,7 @@ export default function OrganizerPage() {
             Twórz, zarządzaj i promuj wydarzenia — wszystko z jednego panelu.
           </p>
 
-          <a className="btn-primary-org" href="/organizer/signup">
+          <a className="btn-primary-org" href="http://localhost:8081/">
             Zostań organizatorem
           </a>
         </div>

@@ -230,7 +230,7 @@ export default function OrganizerAuth() {
   return (
     <div className="organizer-theme min-h-screen flex items-center justify-center p-4">
 
-        <div className="animated-gradient" />
+      <div className="animated-gradient" />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-amber-300/20 rounded-full blur-3xl" />

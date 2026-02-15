@@ -9,15 +9,16 @@ import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import OrganizerAuth from "./pages/OrganizerAuth";
-import OrganizerWaiting from "./pages/OrganizerWaiting";
+// import OrganizerAuth from "./pages/OrganizerAuth";
+// import OrganizerWaiting from "./pages/OrganizerWaiting";
 import Events from "./pages/Events";
 import Analytics from "./pages/Analytics";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Staff from "./pages/Staff";
-import CreateEventPage from "./pages/CreateEventPage";
+import AdminOrganizations from "./pages/AdminOrganizations";
+// import CreateEventPage from "./pages/CreateEventPage";
 
 
 const queryClient = new QueryClient();
@@ -34,9 +35,9 @@ const App = () => (
 
             <Route path="/auth" element={<Auth />} />
 
-            {/* Organizer auth */}
+            {/* Organizer auth  TO DELETE
             <Route path="/organizer/auth" element={<OrganizerAuth />} />
-            <Route path="/organizer/waiting" element={<OrganizerWaiting />} />
+            <Route path="/organizer/waiting" element={<OrganizerWaiting />} /> */}
 
             <Route
               element={
@@ -86,12 +87,21 @@ const App = () => (
               />
 
               <Route
+                path="/organizations"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <AdminOrganizations />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* <Route
                 path="/organizer/create-event"
                 element={
                   <ProtectedRoute allowedRoles={["organizer"]}>
                     <CreateEventPage />
                   </ProtectedRoute>
-                }/>
+                }/> */}
 
               <Route path="/settings" element={<Settings />} />
             </Route>

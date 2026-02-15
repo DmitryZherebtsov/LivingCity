@@ -1,0 +1,24 @@
+
+.animated-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+
+background: linear-gradient(
+  120deg,
+  #ff8c39,
+  #ffae80,
+  #ffd95d,
+  #ffae80,
+  #ff8c39
+);
+
+  background-size: 400% 400%;
+  animation: gradientShift 18s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
