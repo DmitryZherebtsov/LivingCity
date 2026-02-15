@@ -1,4 +1,3 @@
-// src/api/axios.js
 import axios from "axios";
 
 const api = axios.create({
@@ -6,7 +5,6 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// 🔐 Додаємо токен автоматично до кожного запиту
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");

@@ -1,19 +1,30 @@
 function requireRole(allowed = []) {
   return (req, res, next) => {
-    if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
 
-    const userRoleId = req.user.roleId;
-    const userRoleName = req.user.roleName && String(req.user.roleName).toLowerCase();
+    const userRole =
+      req.user.roleName ||
+      req.user.role ||
+      req.user.role_id ||
+      null;
 
-    const ok = allowed.some(a => {
-      const allowedVal = String(a).toLowerCase();
-      if (allowedVal === userRoleName) return true;
-      if (userRoleId && String(a) === String(userRoleId)) return true;
-      return false;
-    });
+    if (!userRole) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
 
-    if (!ok) return res.status(403).json({ message: 'Forbidden' });
-    return next();
+    const normalizedUserRole = String(userRole).toLowerCase();
+
+    const ok = allowed.some(a =>
+      String(a).toLowerCase() === normalizedUserRole
+    );
+
+    if (!ok) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    next();
   };
 }
 

@@ -5,7 +5,7 @@ const { requireAuth } = require('../middleware/auth.middleware');
 const { requireRole } = require('../middleware/role.middleware');
 const ROLES = require('../config/roles');
 
-router.post('/', requireAuth, requireRole([ROLES.ADMIN]), controller.create);
+router.post('/', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), controller.create);
 router.get('/', controller.list);
 router.get('/:id', controller.getOne);
 router.put('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.update);

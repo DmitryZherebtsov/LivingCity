@@ -1,4 +1,5 @@
 const eventModel = require('../models/eventModel');
+const pool = require('../config/dbConfig');
 
 const validateCoords = (lon, lat) => {
   if (lon === undefined || lat === undefined) return false;
@@ -14,7 +15,23 @@ const create = async (req, res) => {
     if (!body.title) return res.status(400).json({ error: 'title is required' });
     if (!validateCoords(body.lon, body.lat)) return res.status(400).json({ error: 'valid lon and lat are required' });
 
-    const event = await eventModel.createEvent(body);
+    let organization_id = null;
+    if (req.user && req.user.id) {
+      const r = await require('../config/dbConfig').query(
+        `SELECT organization_id FROM organizators WHERE user_id = $1 LIMIT 1`,
+        [req.user.id]
+      );
+      if (r.rows.length) organization_id = r.rows[0].organization_id;
+    }
+
+    const payload = {
+      ...body,
+      status: 'pending',
+      organization_id,
+      created_by: req.user ? req.user.id : null
+    };
+
+    const event = await eventModel.createEvent(payload);
     res.status(201).json(event);
   } catch (err) {
     console.error(err);
@@ -22,14 +39,16 @@ const create = async (req, res) => {
   }
 };
 
+
 const list = async (req, res) => {
   try {
-    const { page, limit, event_type, q, lat, lon, radius_km } = req.query;
+    const { page, limit, event_type, q, lat, lon, radius_km, status } = req.query;
     const options = {
       page: page ? parseInt(page, 10) : undefined,
       limit: limit ? Math.min(parseInt(limit, 10), 200) : undefined,
       event_type,
       qtext: q,
+      status 
     };
 
     if (lat !== undefined && lon !== undefined && radius_km !== undefined) {

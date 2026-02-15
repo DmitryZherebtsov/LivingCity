@@ -1,5 +1,6 @@
 const pool = require('../config/dbConfig');
 
+
 const createEvent = async (data) => {
   const {
     title,
@@ -17,27 +18,38 @@ const createEvent = async (data) => {
     is_free,
     metadata = {},
     visitor_count = 0,
+    status = 'active',
+    organization_id = null,
+    created_by = null
   } = data;
 
   const q = `
     INSERT INTO events
-      (title, description, event_type, url, organizer, address, city, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count)
+      (title, description, event_type, url, organizer, address, city, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count, status, organization_id, created_by)
     VALUES
-      ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+      ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
     RETURNING *;
   `;
 
-  const values = [title, description, event_type, url, organizer, address, city, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count];
+  const values = [title, description, event_type, url, organizer, address, city, lon, lat, start_time, end_time, capacity, is_free, metadata, visitor_count, status, organization_id, created_by];
 
   const res = await pool.query(q, values);
   return res.rows[0];
 };
 
-// Read list with pagination, filters, and optional nearby search (lat, lon, radius_km)
-const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km } = {}) => {
+
+
+const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km, status } = {}) => {
   const params = [];
-  // when we alias events as "e", use e.column in WHERE
   let where = 'WHERE 1=1';
+
+  if (status) {
+    params.push(status);
+    where += ` AND e.status = $${params.length}`;
+  } else {
+    params.push('approved');
+    where += ` AND e.status = $${params.length}`;
+  }
 
   if (event_type) {
     params.push(event_type);
@@ -51,7 +63,7 @@ const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km }
 
   if (lat !== undefined && lon !== undefined && radius_km !== undefined) {
     params.push(lat, lon, radius_km);
-    const idx = params.length - 2; // starting index of lat
+    const idx = params.length - 2; 
     where += ` AND (
       6371 * acos(
         cos(radians($${idx})) * cos(radians(e.lat)) *
@@ -61,7 +73,6 @@ const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km }
     ) <= $${idx+2}`;
   }
 
-  // Use LATERAL to fetch first image + all images per event
   let q = `
     SELECT
       e.*,
@@ -88,7 +99,6 @@ const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km }
     ORDER BY e.start_time NULLS LAST, e.created_at DESC
   `;
 
-  // pagination (if provided)
   if (page !== undefined && limit !== undefined) {
     const offset = (page - 1) * limit;
     params.push(limit, offset);
@@ -102,7 +112,6 @@ const getEvents = async ({ page, limit, event_type, qtext, lat, lon, radius_km }
 };
 
 
-// Read one
 const getEventById = async (id) => {
   const q = `
     SELECT
@@ -135,9 +144,12 @@ const getEventById = async (id) => {
 };
 
 
-// Update
 const updateEvent = async (id, data) => {
-  const allowed = ['title','description','event_type','url','organizer','address','city','lon','lat','start_time','end_time','capacity','is_free','metadata', 'visitor_count']; 
+
+  const allowed = ['title','description','event_type','url','organizer','address',
+    'city','lon','lat','start_time','end_time','capacity','is_free','metadata','visitor_count',
+  'status','organization_id'];
+
   const sets = [];
   const values = [];
   let idx = 1;
@@ -162,7 +174,6 @@ const updateEvent = async (id, data) => {
   return res.rows[0] || null; 
 };
 
-// Delete
 const deleteEvent = async (id) => {
   await pool.query('DELETE FROM events WHERE id = $1', [id]);
   return true;

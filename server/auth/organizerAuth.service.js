@@ -212,9 +212,12 @@ async function loginOrganizer(email, password) {
   }
 
   const accessToken = generateAccessToken({
-    id: user.id,
-    role: user.role_name
+    sub: user.id,
+    email: user.email,
+    roleName: 'organizer'
   });
+
+
 
   const refreshToken = generateRefreshTokenPlain();
   const tokenHash = hashToken(refreshToken);

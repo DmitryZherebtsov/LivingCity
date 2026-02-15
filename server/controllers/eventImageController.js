@@ -17,7 +17,12 @@ const uploadImages = async (req, res) => {
     const eventId = Number(req.params.id);
     if (Number.isNaN(eventId)) return res.status(400).json({ error: 'invalid event id' });
 
-    const evt = await eventModel.getById ? await eventModel.getById(eventId) : true;
+    let evt = null;
+    try {
+      evt = await eventModel.getEventById(eventId);
+    } catch (e) {
+      evt = null;
+    }
     if (!evt) return res.status(404).json({ error: 'Event not found' });
 
     if (!req.files || req.files.length === 0) {
@@ -28,6 +33,8 @@ const uploadImages = async (req, res) => {
     const eventDir = path.join(UPLOAD_BASE, String(eventId));
     ensureDir(eventDir);
 
+    const keepFirstOriginal = String(req.query.original_first || "") === "true";
+
     for (let i = 0; i < req.files.length; i++) {
       const file = req.files[i];
 
@@ -37,27 +44,36 @@ const uploadImages = async (req, res) => {
       const filename = `${Date.now()}-${uuidv4()}.${ext}`;
       const outPath = path.join(eventDir, filename);
 
-      if (ext === 'jpg') {
-        await sharp(file.buffer)
-          .rotate()
-          .resize({ width: 300 })
-          .jpeg({ quality: 80, chromaSubsampling: '4:4:4' })
-          .toFile(outPath);
+      if (i === 0 && keepFirstOriginal) {
+        const maxBytes = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxBytes) {
+          return res.status(400).json({ error: 'First image must be <= 10MB' });
+        }
+        fs.writeFileSync(outPath, file.buffer);
       } else {
-        await sharp(file.buffer)
-          .rotate()
-          .resize({ width: 300 })
-          .png({ compressionLevel: 8 })
-          .toFile(outPath);
+        if (ext === 'jpg') {
+          await sharp(file.buffer)
+            .rotate()
+            .resize({ width: 1200 })
+            .jpeg({ quality: 80, chromaSubsampling: '4:4:4' })
+            .toFile(outPath);
+        } else {
+          await sharp(file.buffer)
+            .rotate()
+            .resize({ width: 1200 })
+            .png({ compressionLevel: 8 })
+            .toFile(outPath);
+        }
       }
 
-      const publicUrl = `${filename}`;
+      const publicUrl = path.join('uploads', 'events', String(eventId), filename).replace(/\\/g, '/');
 
       const record = await eventImageModel.createImage({
         event_id: eventId,
         filename: publicUrl,
         mime: file.mimetype,
         size: fs.statSync(outPath).size,
+        position: i
       });
 
       saved.push(record);

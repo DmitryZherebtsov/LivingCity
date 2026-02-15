@@ -11,7 +11,7 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 mb limit 
 });
 
-router.post('/:id/images', requireAuth, requireRole([ROLES.ADMIN]), upload.array('images', 10), uploadImages);
+router.post('/:id/images', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), upload.array('images', 10), uploadImages);
 router.get('/:id/images', listImages);
 router.delete('/images/:id', requireAuth, requireRole([ROLES.ADMIN]), deleteImage);
 
