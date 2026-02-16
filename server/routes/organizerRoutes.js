@@ -37,7 +37,7 @@ router.patch("/approve/:userId", requireAuth, requireRole([ROLES.ADMIN]), organi
 router.patch("/reject/:userId", requireAuth, requireRole([ROLES.ADMIN]), organizerController.reject);
 
 
-router.get("/organization", requireAuth, requireRole([ROLES.ORGANIZER]), controller.getOrganization);
+router.get("/organization", requireAuth, controller.getOrganization);
 router.patch("/organization", requireAuth, requireRole([ROLES.ORGANIZER]), controller.updateOrganization);
 
 

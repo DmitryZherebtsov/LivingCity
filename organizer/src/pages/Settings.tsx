@@ -13,6 +13,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 
 interface OrganizationForm {
+  id?: number;
   name: string;
   website: string;
   contact_email: string;
@@ -89,6 +90,7 @@ const Settings = () => {
   }
 
   // console.log(form.logo_url);
+  // console.log(form);
 
 
   return (
@@ -169,7 +171,7 @@ const Settings = () => {
               {form.logo_url && (
                 <div className="flex items-center gap-4 mb-3">
                   <img
-                    src={`${import.meta.env.VITE_API_URL || "http://localhost:3000"}/${form.logo_url}`}
+                    src={`${import.meta.env.VITE_API_URL || "http://localhost:3000"}/uploads/organizations/${form.id}/${form.logo_url}`}
                     alt="Logo"
                     className="h-24 object-contain rounded-lg border shadow bg-white p-2"
                   />

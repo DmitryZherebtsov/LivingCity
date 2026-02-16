@@ -154,6 +154,51 @@ const incrementVisitors = async (req, res) => {
   }
 };
 
+
+exports.approve = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) return res.status(400).json({ error: 'invalid id' });
+
+    const updated = await eventModel.updateEvent(id, { status: 'approved' });
+    if (!updated) return res.status(404).json({ error: 'Event not found' });
+    return res.json({ success: true, event: updated });
+  } catch (err) {
+    console.error('approve error', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.reject = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: "invalid id" });
+    }
+
+    const body = req.body || {};
+    const reason = body.reason || null;
+
+    const updated = await eventModel.updateEvent(id, {
+      status: "rejected",
+      metadata: {
+        rejection_reason: reason,
+      },
+    });
+
+    if (!updated) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    return res.json({ success: true, event: updated });
+
+  } catch (err) {
+    console.error("reject error", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
+
 module.exports = {
   create,
   list,
@@ -161,5 +206,7 @@ module.exports = {
   update,
   remove,
   incrementVisitors,
-  getMyEvents
+  getMyEvents,
+  approve: exports.approve,
+  reject: exports.reject
 };

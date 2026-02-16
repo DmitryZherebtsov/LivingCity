@@ -119,6 +119,13 @@
   gap: 8px;
 }
 
+.ed-avatar {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
 .ed-icon-btn {
   background: #fff;
   border: 1px solid #e6eef2;
@@ -327,7 +334,6 @@
   margin-left: 6px;
 }
 
-/* small text */
 .ed-small {
   font-size: 13px;
   color: #64748b;

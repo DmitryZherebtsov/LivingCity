@@ -141,7 +141,7 @@ export default function EventsPage() {
               </div>
 
               <div className="card-body">
-                <h2 className="card-title">{ev.title}</h2>
+                <h2 className="card-title-ep">{ev.title}</h2>
                 <p className="card-desc">{truncate(ev.description)}</p>
 
                 <div className="card-meta">

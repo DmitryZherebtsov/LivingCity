@@ -280,7 +280,7 @@ function EventEdit() {
                 {images.map((img) => (
                   <div key={img.id} className="relative group">
                     <img
-                      src={`${BASE_URL}/${img.filename}`}
+                      src={`${BASE_URL}/uploads/events/${id}/${img.filename}`}
                       alt="event"
                       className="h-28 w-44 object-cover rounded-lg shadow"
                     />

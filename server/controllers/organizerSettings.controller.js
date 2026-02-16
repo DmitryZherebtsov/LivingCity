@@ -11,6 +11,7 @@ async function getOrganization(req, res) {
     if (!org) return res.status(404).json({ error: 'Organization not found' });
 
     const out = {
+      id: org.id,
       name: org.name || '',
       website: org.website || '',
       contact_email: org.contact_email || '',
@@ -86,13 +87,13 @@ exports.uploadLogo = async (req, res) => {
       }
     }
 
-    const relativePath = `uploads/organizations/${org.id}/${req.file.filename}`;
+    // const relativePath = `uploads/organizations/${org.id}/${req.file.filename}`;
 
     await organizationService.updateOrganizationByUserId(req.user.id, {
-      logo_url: relativePath,
+      logo_url: req.file.filename,
     });
 
-    res.json({ logo_url: relativePath });
+    res.json({ logo_url: req.file.filename });
 
   } catch (err) {
     console.error(err);

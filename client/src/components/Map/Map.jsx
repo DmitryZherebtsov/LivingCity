@@ -73,21 +73,26 @@ const Map = ({ onMapReady, events = [], initialCenter = null, initialZoom = 3.5 
       const lng = Number(event.lon);
       const lat = Number(event.lat);
 
-      if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
-        return;
-      }
-
+      if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
       if (lng === 0 && lat === 0) return;
-
-      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-        <h3>${event.title}</h3>
-        <p><strong>${event.event_type}</strong></p>
-        <p>${event.description}</p>
-        ${event.url ? `<a href="${event.url}" target="_blank" rel="noopener noreferrer">Więcej Informacji</a>` : ''}
-      `);
 
       const rawType = (event.event_type || '').toLowerCase();
       const color = typeColors[rawType] || typeColors.default;
+
+      const imageUrl = event.first_image?.filename
+        ? `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/${event.first_image.filename}`
+        : null;
+
+      const popupHTML = `<div style="width:220px;font-family:system-ui;background:rgba(10,15,25,0.95);padding:12px;border-radius:14px;color:#fff;">
+                          ${imageUrl ? `<img src="${imageUrl}" style="width:100%;height:100px;object-fit:cover;border-radius:10px;margin-bottom:10px;" />` : ``}
+                          <h3 style="margin:0 0 4px 0;font-size:15px;font-weight:600;line-height:1.3;">${event.title}</h3>
+                          <p style="margin:0 0 6px 0;font-size:12px;opacity:0.7;">${event.event_type || ''}</p>
+                          <p style="margin:0 0 10px 0;font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;opacity:0.85;">${event.description || ''}</p>
+                          <a href="/events/${event.id}" style="font-size:13px;font-weight:500;color:#12B9D6;text-decoration:none;">Więcej Informacji →</a>
+                          </div>`;
+
+
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupHTML);
 
       const marker = new mapboxgl.Marker({ color })
         .setLngLat([lng, lat])
@@ -97,6 +102,7 @@ const Map = ({ onMapReady, events = [], initialCenter = null, initialZoom = 3.5 
       markersRef.current.push(marker);
     });
   }, [events]);
+
 
   return (
     <div ref={containerRef} className="map-container" />

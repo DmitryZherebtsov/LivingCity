@@ -18,6 +18,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Staff from "./pages/Staff";
 import AdminOrganizations from "./pages/AdminOrganizations";
+import AdminPendingEvents from "./pages/AdminPendingEvents";
 // import CreateEventPage from "./pages/CreateEventPage";
 
 
@@ -94,6 +95,15 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
+
+              <Route 
+                path="/events-pending" 
+                element={
+                   <ProtectedRoute allowedRoles={["admin"]}>
+                    <AdminPendingEvents />
+                  </ProtectedRoute>
+                  } />
+
 
               {/* <Route
                 path="/organizer/create-event"

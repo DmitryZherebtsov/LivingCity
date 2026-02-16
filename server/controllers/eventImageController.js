@@ -66,11 +66,11 @@ const uploadImages = async (req, res) => {
         }
       }
 
-      const publicUrl = path.join('uploads', 'events', String(eventId), filename).replace(/\\/g, '/');
+      // const publicUrl = path.join('uploads', 'events', String(eventId), filename).replace(/\\/g, '/'); 
 
       const record = await eventImageModel.createImage({
         event_id: eventId,
-        filename: publicUrl,
+        filename: filename,
         mime: file.mimetype,
         size: fs.statSync(outPath).size,
         position: i

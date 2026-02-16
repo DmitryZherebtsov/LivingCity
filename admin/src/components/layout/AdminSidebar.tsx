@@ -8,6 +8,7 @@ import {
   BarChart3,
   UserCog,
   BookCheck,
+  ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserMenu } from "./UserMenu";
@@ -33,12 +34,10 @@ export function AdminSidebar() {
           { to: "/staff", icon: UserCog, label: "Zespół" },
           { to: "/users", icon: Users, label: "Użytkownicy" },
           { to: "/organizations", icon: BookCheck, label: "Organizacje" },
+          { to: "/events-pending", icon: ClipboardCheck, label: "Weryfikacja wydarzeń" },
         ]
       : []),
     
-    // ...(isOrganizer
-    //   ? [{ to: "/organizer/create-event", icon: CalendarPlus, label: "Stwórz wydarzenie" }]
-    //   : []),
 
     { to: "/settings", icon: Settings, label: "Ustawienia" },
   ];

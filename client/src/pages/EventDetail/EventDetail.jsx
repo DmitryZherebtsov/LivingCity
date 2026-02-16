@@ -186,9 +186,12 @@ useEffect(() => {
             <div className="ed-sep" />
             <div className="ed-organizer">
               <h4>Organizer</h4>
-              <div className="ed-org-row">
-                {event.organizer?.avatar && <img className="ed-avatar" src={event.organizer.avatar} alt={event.organizer?.name || "Organizer"} onError={(e)=>{e.currentTarget.style.display='none'}} />}
-                <div><div className="ed-org-name">{event.organizer?.name || "—"}</div><div className="ed-org-sub">{event.organizer?.eventsHosted ? `${event.organizer.eventsHosted} events hosted` : ""}</div></div>
+              <div className="ed-org-row"> 
+                      <div className="ed-org-name">
+                        {typeof event.organizer === "string"
+                              ? event.organizer
+                              : event.organizer?.name || "—"}
+                      </div>
               </div>
               {event.organizer?.bio && <p className="ed-text ed-small">{event.organizer.bio}</p>}
               <div className="ed-contact-list">

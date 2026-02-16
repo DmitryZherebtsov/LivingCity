@@ -23,8 +23,16 @@
 .mapboxgl-popup-content {
   color: #333;
   padding: 15px;
-  border-radius: 8px;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
 }
+
+.mapboxgl-popup-tip {
+  display: none !important;
+}
+
 
 .map-root { height: 100%; width: 100%; }
 .map-container { position:absolute; inset:0; }

@@ -13,4 +13,7 @@ router.get('/:id', controller.getOne);
 router.put('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.update);
 router.delete('/:id', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), controller.remove);
 
+router.patch('/approve/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.approve);
+router.patch('/reject/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.reject);
+
 module.exports = router;
