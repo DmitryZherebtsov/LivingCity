@@ -80,7 +80,7 @@ const Map = ({ onMapReady, events = [], initialCenter = null, initialZoom = 3.5 
       const color = typeColors[rawType] || typeColors.default;
 
       const imageUrl = event.first_image?.filename
-        ? `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/${event.first_image.filename}`
+        ? `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/uploads/events/${event.id}/${event.first_image.filename}`
         : null;
 
       const popupHTML = `<div style="width:220px;font-family:system-ui;background:rgba(10,15,25,0.95);padding:12px;border-radius:14px;color:#fff;">

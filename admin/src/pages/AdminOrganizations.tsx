@@ -46,6 +46,9 @@ export default function AdminOrganizations() {
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>("");
   const [selected, setSelected] = useState<OrganizationRaw | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"approved" | "pending" | "rejected">("pending");
+
+
   const [page, setPage] = useState<number>(1);
   const pageSize = 10;
 
@@ -58,7 +61,7 @@ export default function AdminOrganizations() {
   const fetchOrganizations = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/api/admin/organizations/pending");
+      const res = await api.get(`/api/admin/organizations?status=${statusFilter}`);
       setOrganizations(res.data || []);
     } catch (err: any) {
       console.error("fetchOrganizations error:", err);
@@ -81,36 +84,63 @@ export default function AdminOrganizations() {
   };
 
   const handleUpdateStatus = async (
-    org: OrganizationRaw,
-    status: "approved" | "rejected"
-  ) => {
-    const verb = status === "approved" ? "zatwierdzić" : "odrzucić";
-    const ok = window.confirm(
-      `Czy na pewno chcesz ${verb} organizację "${org.name}"?`
+  org: OrganizationRaw,
+  status: "approved" | "rejected"
+) => {
+
+  let reason = undefined;
+
+  if (status === "rejected") {
+    reason = window.prompt(
+      `Podaj powód odrzucenia organizacji "${org.name}":`
     );
-    if (!ok) return;
 
-    const prev = organizations;
-    setOrganizations((s) => s.filter((o) => o.id !== org.id));
-    if (selected?.id === org.id) setSelected(null);
-
-    try {
-      await api.patch(`/api/admin/organizations/${org.id}/status`, { status });
+    if (!reason || reason.trim().length < 3) {
       toast({
-        title:
-          status === "approved"
-            ? "Organizacja zatwierdzona"
-            : "Organizacja odrzucona",
-      });
-    } catch (err: any) {
-      setOrganizations(prev);
-      toast({
-        title: "Błąd aktualizacji",
-        description: err.response?.data?.error || "Nie udało się zmienić statusu",
+        title: "Musisz podać powód odrzucenia",
         variant: "destructive",
       });
+      return;
     }
-  };
+  }
+
+  const ok = window.confirm(
+    `Czy na pewno chcesz ${
+      status === "approved" ? "zatwierdzić" : "odrzucić"
+    } organizację "${org.name}"?`
+  );
+
+  if (!ok) return;
+
+  const prev = organizations;
+  setOrganizations((s) => s.filter((o) => o.id !== org.id));
+  if (selected?.id === org.id) setSelected(null);
+
+  try {
+    await api.patch(`/api/admin/organizations/${org.id}/status`, {
+      status,
+      reason,
+    });
+
+    toast({
+      title:
+        status === "approved"
+          ? "Organizacja zatwierdzona"
+          : "Organizacja odrzucona",
+    });
+
+  } catch (err: any) {
+    setOrganizations(prev);
+
+    toast({
+      title: "Błąd aktualizacji",
+      description:
+        err.response?.data?.error || "Nie udało się zmienić statusu",
+      variant: "destructive",
+    });
+  }
+};
+
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -136,6 +166,13 @@ export default function AdminOrganizations() {
       </div>
     );
   }
+
+  useEffect(() => {
+    if (!isLoading && user?.role === "admin") {
+      fetchOrganizations();
+    }
+  }, [statusFilter]);
+
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
@@ -168,6 +205,22 @@ export default function AdminOrganizations() {
           >
             Odśwież
           </Button>
+          <div className="flex gap-3">
+            <Button variant={statusFilter === "approved" ? "default" : "outline"} onClick={() => setStatusFilter("approved")}>
+              Zatwierdzone
+            </Button>
+
+            <Button variant={statusFilter === "rejected" ? "default" : "outline"} onClick={() => setStatusFilter("rejected")}>
+              Odrzucone
+            </Button>
+
+
+            <Button variant={statusFilter === "pending" ? "default" : "outline"} onClick={() => setStatusFilter("pending")}>
+              Nie zatwierdzone
+            </Button>
+
+            
+          </div>
         </div>
       </div>
 
@@ -247,50 +300,35 @@ export default function AdminOrganizations() {
 
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-3">
+                  {org.status !== "approved" && (
                     <Button
                       size="sm"
-                      className="
-                        w-32 h-9
-                        inline-flex items-center justify-center
-                        bg-gradient-to-r from-emerald-400 to-green-500
-                        hover:from-emerald-500 hover:to-green-600
-                        text-white
-                        shadow-lg shadow-emerald-500/30
-                        hover:shadow-xl hover:shadow-emerald-500/40
-                        transition-all duration-200
-                      "
+                      className="bg-gradient-to-r from-emerald-400 to-green-500 text-white"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleUpdateStatus(org, "approved");
                       }}
-                      title="Zatwierdź"
                     >
                       <Check className="w-4 h-4 mr-2" />
                       Zatwierdź
                     </Button>
+                  )}
 
+                  {org.status === "approved" && (
                     <Button
                       size="sm"
-                      className="
-                        w-32 h-9
-                        inline-flex items-center justify-center
-                        bg-gradient-to-r from-rose-400 to-red-500
-                        hover:from-rose-500 hover:to-red-600
-                        text-white
-                        shadow-lg shadow-rose-500/30
-                        hover:shadow-xl hover:shadow-rose-500/40
-                        transition-all duration-200
-                      "
+                      className="bg-gradient-to-r from-rose-400 to-red-500 text-white"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleUpdateStatus(org, "rejected");
                       }}
-                      title="Odrzuć"
                     >
                       <X className="w-4 h-4 mr-2" />
                       Odrzuć
                     </Button>
-                  </div>
+                  )}
+                </div>
+
                 </TableCell>
 
                 </TableRow>
@@ -391,10 +429,10 @@ export default function AdminOrganizations() {
                 <p className="whitespace-pre-wrap text-sm text-muted-foreground">{selected.description || "—"}</p>
               </div>
 
-              <div>
+              {/* <div>
                 <h3 className="text-sm font-medium mb-1">Metadane</h3>
                 <pre className="text-xs bg-muted/20 p-2 rounded max-h-40 overflow-auto">{JSON.stringify(selected.metadata || {}, null, 2)}</pre>
-              </div>
+              </div> */}
 
               <div className="flex gap-3 mt-4">
                 <Button

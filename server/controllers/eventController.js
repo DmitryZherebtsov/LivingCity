@@ -1,5 +1,6 @@
 const eventModel = require('../models/eventModel');
 const pool = require('../config/dbConfig');
+const { sendRejectionEmail } = require('../services/emailService');
 
 const validateCoords = (lon, lat) => {
   if (lon === undefined || lat === undefined) return false;
@@ -158,26 +159,51 @@ const incrementVisitors = async (req, res) => {
 exports.approve = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: 'invalid id' });
+    if (Number.isNaN(id))
+      return res.status(400).json({ error: "invalid id" });
 
-    const updated = await eventModel.updateEvent(id, { status: 'approved' });
-    if (!updated) return res.status(404).json({ error: 'Event not found' });
+    const updated = await eventModel.updateEvent(id, {
+      status: "approved",
+    });
+
+    if (!updated)
+      return res.status(404).json({ error: "Event not found" });
+
+    const orgRes = await pool.query(
+      "SELECT name, contact_email FROM organizations WHERE id = $1",
+      [updated.organization_id]
+    );
+
+    const organization = orgRes.rows[0];
+
+    if (organization?.contact_email) {
+      try {
+        await sendApprovalEmail(organization.contact_email, {
+          organizer_name: organization.name,
+          event_title: updated.title,
+          event_url: `${process.env.SITE_URL}/events/${updated.id}`,
+        });
+      } catch (emailErr) {
+        console.error("Email sending failed:", emailErr.message);
+      }
+    }
+
     return res.json({ success: true, event: updated });
+
   } catch (err) {
-    console.error('approve error', err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error("approve error", err);
+    return res.status(500).json({ error: "Server error" });
   }
 };
+
 
 exports.reject = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    if (Number.isNaN(id)) {
+    if (Number.isNaN(id))
       return res.status(400).json({ error: "invalid id" });
-    }
 
-    const body = req.body || {};
-    const reason = body.reason || null;
+    const reason = req.body?.reason || null;
 
     const updated = await eventModel.updateEvent(id, {
       status: "rejected",
@@ -186,8 +212,29 @@ exports.reject = async (req, res) => {
       },
     });
 
-    if (!updated) {
+    if (!updated)
       return res.status(404).json({ error: "Event not found" });
+
+    const orgRes = await pool.query(
+      "SELECT name, contact_email FROM organizations WHERE id = $1",
+      [updated.organization_id]
+    );
+
+    const organization = orgRes.rows[0];
+
+    if (organization?.contact_email) {
+      try {
+        await sendRejectionEmail(
+          organization.contact_email,
+          reason,
+          {
+            organizer_name: organization.name,
+            event_title: updated.title,
+          }
+        );
+      } catch (emailErr) {
+        console.error("Email sending failed:", emailErr.message);
+      }
     }
 
     return res.json({ success: true, event: updated });

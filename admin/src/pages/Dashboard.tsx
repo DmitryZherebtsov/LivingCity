@@ -73,14 +73,14 @@ export default function Dashboard() {
           <p className="page-description">Przegląd zarządzania wydarzeniami</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm">
+          {/* <Button variant="outline" size="sm">                                        TO DO func
             <Download className="w-4 h-4 mr-2" />
             Eksportuj
           </Button>
           <Button size="sm">
             <Plus className="w-4 h-4 mr-2" />
             Nowe wydarzenie
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -94,10 +94,10 @@ export default function Dashboard() {
           />
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         </div>
-        <Button variant="outline">
+        {/* <Button variant="outline">
           <Filter className="w-4 h-4 mr-2" />
           Filtry
-        </Button>
+        </Button> */}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

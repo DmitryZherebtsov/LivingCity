@@ -13,7 +13,7 @@ function requireAuth(req, res, next) {
       process.env.ACCESS_TOKEN_SECRET
     );
 
-    console.log("TOKEN OK:", payload);
+    // console.log("TOKEN OK:", payload);
 
     req.user = {
       id: payload.sub,

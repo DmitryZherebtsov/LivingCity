@@ -21,6 +21,7 @@ export default function AdminPendingEvents() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<any | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 8;
 
@@ -45,35 +46,56 @@ export default function AdminPendingEvents() {
   };
 
   const handleUpdateStatus = async (
-    event: any,
-    status: "approve" | "reject"
-  ) => {
-    const ok = window.confirm(
-      status === "approve"
-        ? `Zatwierdzić wydarzenie "${event.title}"?`
-        : `Odrzucić wydarzenie "${event.title}"?`
-    );
-    if (!ok) return;
+      event: any,
+      status: "approve" | "reject"
+    ) => {
 
-    try {
-      await api.patch(`/api/events/${status}/${event.id}`);
-      setEvents((s) => s.filter((e) => e.id !== event.id));
-      if (selected?.id === event.id) setSelected(null);
+      let reason = null;
 
-      toast({
-        title:
-          status === "approve"
-            ? "Wydarzenie zatwierdzone"
-            : "Wydarzenie odrzucone",
-      });
-    } catch (err: any) {
-      toast({
-        title: "Błąd",
-        description: err.response?.data?.error || "Operacja nie powiodła się",
-        variant: "destructive",
-      });
-    }
-  };
+      if (status === "reject") {
+        reason = window.prompt(
+          `Podaj powód odrzucenia wydarzenia "${event.title}":`
+        );
+
+        if (!reason) {
+          toast({
+            title: "Błąd",
+            description: "Musisz podać powód odrzucenia",
+            variant: "destructive",
+          });
+          return;
+        }
+      } else {
+        const ok = window.confirm(
+          `Zatwierdzić wydarzenie "${event.title}"?`
+        );
+        if (!ok) return;
+      }
+
+      try {
+        await api.patch(`/api/events/${status}/${event.id}`, {
+          reason: reason,  
+        });
+
+        setEvents((s) => s.filter((e) => e.id !== event.id));
+        if (selected?.id === event.id) setSelected(null);
+
+        toast({
+          title:
+            status === "approve"
+              ? "Wydarzenie zatwierdzone"
+              : "Wydarzenie odrzucone",
+        });
+
+      } catch (err: any) {
+        toast({
+          title: "Błąd",
+          description: err.response?.data?.error || "Operacja nie powiodła się",
+          variant: "destructive",
+        });
+      }
+    };
+
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -151,7 +173,7 @@ export default function AdminPendingEvents() {
                     <div className="flex items-center gap-3">
                       {ev.first_image?.filename ? (
                         <img
-                          src={`${BASE_URL}/${ev.first_image.filename}`}
+                          src={`${BASE_URL}/uploads/events/${ev.id}/${ev.first_image.filename}`}
                           className="h-10 w-16 rounded object-cover"
                         />
                       ) : (
@@ -209,7 +231,11 @@ export default function AdminPendingEvents() {
         </Table>
       </div>
 
-      {/* SIDE PANEL */}
+
+
+
+
+
       {selected && (
         <>
           <div
@@ -237,7 +263,7 @@ export default function AdminPendingEvents() {
                   {selected.images.map((img: any) => (
                     <img
                       key={img.id}
-                      src={`${BASE_URL}/${img.filename}`}
+                      src={`${BASE_URL}/uploads/events/${selected.id}/${img.filename}`}
                       className="w-full h-40 object-cover rounded-lg shadow"
                     />
                   ))}

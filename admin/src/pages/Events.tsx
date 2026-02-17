@@ -153,10 +153,10 @@ export default function Events() {
             <h1 className="page-header">Zarządzanie wydarzeniami</h1>
             <p className="page-description">Zarządzaj i organizuj swoje wydarzenia</p>
           </div>
-          <Button size="sm">
+          {/* <Button size="sm">
             <Plus className="w-4 h-4 mr-2" />
             Utwórz wydarzenie
-          </Button>
+          </Button> */}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">

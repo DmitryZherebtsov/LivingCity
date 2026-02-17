@@ -172,7 +172,7 @@ export default function Analytics() {
                 </p>
                 <div className="flex items-center gap-1 mt-2 text-success text-sm">
                   <TrendingUp className="w-4 h-4" />
-                  <span>—</span>
+                  {/* <span>—</span> */}
                 </div>
               </div>
               <div className="p-3 bg-primary/10 rounded-lg">
@@ -191,7 +191,7 @@ export default function Analytics() {
                 <p className="text-2xl font-bold mt-1">{metrics.newAttendees.toLocaleString()}</p>
                 <div className="flex items-center gap-1 mt-2 text-success text-sm">
                   <TrendingUp className="w-4 h-4" />
-                  <span>—</span>
+                  {/* <span>—</span> */}
                 </div>
               </div>
               <div className="p-3 bg-success/10 rounded-lg">
@@ -209,7 +209,7 @@ export default function Analytics() {
                 <p className="text-2xl font-bold mt-1">{metrics.totalEvents.toLocaleString()}</p>
                 <div className="flex items-center gap-1 mt-2 text-success text-sm">
                   <TrendingUp className="w-4 h-4" />
-                  <span>—</span>
+                  {/* <span>—</span> */}
                 </div>
               </div>
               <div className="p-3 bg-warning/10 rounded-lg">
@@ -227,7 +227,7 @@ export default function Analytics() {
                 <p className="text-2xl font-bold mt-1">{metrics.activeLocations}</p>
                 <div className="flex items-center gap-1 mt-2 text-destructive text-sm">
                   <TrendingDown className="w-4 h-4" />
-                  <span>—</span>
+                  {/* <span>—</span> */}
                 </div>
               </div>
               <div className="p-3 bg-accent rounded-lg">

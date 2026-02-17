@@ -114,10 +114,6 @@ export default function Personel() {
           <h1 className="page-header">Personel</h1>
           <p className="page-description">Zarządzanie kontami administratorów i moderatorów</p>
         </div>
-        <Button size="sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Dodaj użytkownika
-        </Button>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
