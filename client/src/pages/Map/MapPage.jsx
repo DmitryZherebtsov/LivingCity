@@ -24,7 +24,7 @@ export default function MapPage() {
 
   const filteredEvents = useMemo(() => {
     return events.filter((event) => {
-      if (!event.start_time || !event.end_time) return false;
+      if (!event.start_time) return false;
 
       const eventStart = new Date(event.start_time);
       const eventEnd = new Date(event.end_time);

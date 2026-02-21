@@ -9,6 +9,7 @@ router.get('/my', requireAuth, requireRole(['organizer']), controller.getMyEvent
 
 router.post('/', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), controller.create);
 router.get('/', controller.list);
+router.get('/event-types', controller.getEventTypes);
 router.get('/:id', controller.getOne);
 router.put('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.update);
 router.delete('/:id', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), controller.remove);

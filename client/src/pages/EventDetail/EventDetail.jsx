@@ -11,9 +11,13 @@ import {
   ExternalLink,
   Mail,
   Globe,
+  UserPlus,
+  UserCheck,
 } from "lucide-react";
 import useEvents from "../../hooks/useEvents";
 import "./EventDetail.css";
+import api from "../../api/axios";
+import { toast } from "react-toastify";
 
 const getEventImageUrl = (event, index = 0) => {
   if (!event) return null;
@@ -69,11 +73,15 @@ export default function EventDetail() {
     : galleryUrls;
 
   const capacity = event?.capacity || null;
-  const visitors = Number(event?.visitor_count || 0);
-  const spotsLeft = capacity ? Math.max(0, capacity - visitors) : null;
-  const fillPercent = capacity
-    ? Math.round((visitors / capacity) * 100)
-    : null;
+  const initialVisitors = Number(event?.visitor_count || 0);
+  const [localVisitors, setLocalVisitors] = useState(initialVisitors);
+
+  useEffect(() => {
+    setLocalVisitors(Number(event?.visitor_count || 0));
+  }, [event?.visitor_count]);
+
+  const spotsLeft = capacity ? Math.max(0, capacity - localVisitors) : null;
+  const fillPercent = capacity ? Math.round((localVisitors / capacity) * 100) : null;
 
   const priceLabel = event?.is_free
     ? "Darmowe"
@@ -85,6 +93,24 @@ export default function EventDetail() {
     import.meta.env.VITE_PIXABAY_KEY ||
     import.meta.env.PIXABAY_KEY ||
     null;
+
+  const [isGoing, setIsGoing] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  useEffect(() => {
+    if (!event) return;
+
+    const check = async () => {
+      try {
+        const res = await api.get(`/api/participation/${event.id}/check`);
+        setIsGoing(!!res.data?.going);
+      } catch (err) {
+    
+      }
+    };
+
+    check();
+  }, [event]);
 
   useEffect(() => {
     if (!event?.city || !PIXABAY_KEY) return;
@@ -118,6 +144,36 @@ export default function EventDetail() {
       ignore = true;
     };
   }, [event?.city]);
+
+  const handleToggleParticipation = async () => {
+    if (!event) return;
+
+    setActionLoading(true);
+
+    try {
+      if (!isGoing) {
+        await api.post(`/api/participation/${event.id}`);
+        setIsGoing(true);
+        setLocalVisitors((v) => v + 1);
+        toast?.({ title: "Dołączono do wydarzenia" });
+      } else {
+        await api.delete(`/api/participation/${event.id}`);
+        setIsGoing(false);
+        setLocalVisitors((v) => Math.max(0, v - 1));
+        toast?.({ title: "Wypisano z wydarzenia" });
+      }
+    } catch (err) {
+      if (err?.response?.status === 401) {
+        window.alert("Zaloguj się, aby wziąć udział w wydarzeniu.");
+      } else if (err?.response?.data?.error) {
+        toast?.({ title: "Błąd", description: err.response.data.error, variant: "destructive" });
+      } else {
+        toast?.({ title: "Błąd", description: "Operacja nie powiodła się", variant: "destructive" });
+      }
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   if (loading)
     return (
@@ -232,7 +288,7 @@ export default function EventDetail() {
                 <Users /> Uczestnicy
               </div>
               <div className="ed-detail-value">
-                {visitors.toLocaleString("pl-PL")} zapisanych
+                {localVisitors.toLocaleString("pl-PL")} zapisanych
               </div>
             </div>
           </div>
@@ -284,7 +340,7 @@ export default function EventDetail() {
               <>
                 <div className="ed-spots">
                   <div className="ed-spots-left">
-                    {spotsLeft.toLocaleString("pl-PL")} miejsc pozostało
+                    {spotsLeft?.toLocaleString("pl-PL")} miejsc pozostało
                   </div>
                   <div className="ed-fill">
                     {fillPercent}% zajęte
@@ -303,9 +359,26 @@ export default function EventDetail() {
               </div>
             )}
 
-            <button className="ed-cta">
-              Wziąć Udział
-            </button>
+            {/* Participation button */}
+            <div style={{ marginTop: 12 }}>
+              <button
+                className={`ed-cta ed-cta-participation ${isGoing ? "joined" : ""}`}
+                onClick={handleToggleParticipation}
+                disabled={actionLoading || (capacity && spotsLeft === 0 && !isGoing)}
+                aria-pressed={isGoing}
+              >
+                <span className="ed-cta-icon" aria-hidden>
+                  {isGoing ? <UserCheck size={18} /> : <UserPlus size={18} />}
+                </span>
+                <span className="ed-cta-text">
+                  {isGoing ? "Uczestniczę" : "Wezmę udział"}
+                </span>
+              </button>
+            </div>
+
+            <div className="ed-small" style={{ marginTop: 8 }}>
+              Bezpłatna anulacja do 48 godzin przed wydarzeniem
+            </div>
 
             <div className="ed-sep" />
 

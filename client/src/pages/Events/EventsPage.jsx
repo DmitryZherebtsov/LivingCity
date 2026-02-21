@@ -87,7 +87,7 @@ export default function EventsPage() {
     <div className="events-header">
       <div>
         <h1 className="page-title">Wydarzenia</h1>
-        <p className="page-sub">Przeglądaj i zarządzaj wydarzeniami z API</p>
+        <p className="page-sub">Znajdź wydarzenie odpowiadające Twoim upodobaniom!</p>
       </div>
       <div>
         <Link to="/organizer">

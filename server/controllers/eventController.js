@@ -69,15 +69,26 @@ const list = async (req, res) => {
 
 const getOne = async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ error: 'Invalid event id' });
+    }
+
     const row = await eventModel.getEventById(id);
-    if (!row) return res.status(404).json({ error: 'Not found' });
+
+    if (!row) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
     res.json(row);
+
   } catch (err) {
-    console.error(err);
+    console.error('getOne error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 const getMyEvents = async (req, res) => {
   try {
     if (!req.user?.id) {
@@ -151,6 +162,24 @@ const incrementVisitors = async (req, res) => {
   } catch (err) {
     console.error(err);
     if (err.message === 'Event not found') return res.status(404).json({ error: 'Not found' });
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getEventTypes = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT DISTINCT event_type
+      FROM events
+      WHERE event_type IS NOT NULL
+        AND event_type <> ''
+      ORDER BY event_type ASC
+    `);
+
+    const types = result.rows.map(r => r.event_type);
+    res.json(types);
+  } catch (err) {
+    console.error('getEventTypes error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -254,6 +283,7 @@ module.exports = {
   remove,
   incrementVisitors,
   getMyEvents,
+  getEventTypes,
   approve: exports.approve,
   reject: exports.reject
 };

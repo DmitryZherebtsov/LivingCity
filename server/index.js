@@ -12,6 +12,7 @@ const publicAuthRoutes = require('./routes/publicAuthRoutes');
 const organizerAuthRoutes = require('./routes/organizerAuthRoutes');
 const adminOrganizationRoutes = require("./routes/adminOrganization.routes");
 const organizerRoutes = require('./routes/organizerRoutes');
+const eventParticipationRoutes = require("./routes/eventParticipation.routes")
 
 const app = express();
 
@@ -30,7 +31,8 @@ app.use(cors({
   credentials: true,
 }));
 
-/*  BODY PARSER  */
+
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -43,6 +45,8 @@ app.use('/api/public-auth', publicAuthRoutes);
 app.use('/api/organizer-auth', organizerAuthRoutes);
 app.use("/api/admin", adminOrganizationRoutes);
 app.use('/api/organizer', organizerRoutes);
+app.use("/api/participation", eventParticipationRoutes);
+
 
 /* folder for images  */
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
