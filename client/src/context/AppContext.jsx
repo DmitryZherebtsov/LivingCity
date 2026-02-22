@@ -19,7 +19,6 @@ export const AppProvider = ({ children }) => {
     localStorage.getItem("accessToken") || null
   );
 
-  // 🔹 Збереження стану логіну
   const persistLoginState = (loggedIn, userData = null, token = null) => {
     setIsLoggedin(loggedIn);
     localStorage.setItem("isLoggedin", JSON.stringify(!!loggedIn));
@@ -55,16 +54,10 @@ export const AppProvider = ({ children }) => {
     return null;
   } catch (err) {
     console.error("getUserData error:", err.response?.status);
-
-    // ❌ НЕ чіпаємо токен тут
-    // persistLoginState(false, null, null);
-
     return null;
   }
 };
 
-
-  // 🔹 Login
   const login = async ({ email, password }) => {
     try {
       const resp = await api.post("/api/public-auth/login", {
@@ -84,7 +77,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Register
   const register = async (formData) => {
     try {
       const resp = await api.post(
@@ -101,7 +93,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Logout
+
   const logout = async () => {
     try {
       await api.post("/api/public-auth/logout");
@@ -111,7 +103,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Авто-логін при перезавантаженні сторінки
+  
   useEffect(() => {
   if (localStorage.getItem("accessToken")) {
     getUserData();

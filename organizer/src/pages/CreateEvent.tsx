@@ -141,6 +141,8 @@ const CreateEvent = () => {
         });
       }
 
+      console.log(payload);
+
       console.log("Created event", created);
 
       toast({ title: "Wysłano zgłoszenie", description: "Wydarzenie zostało wysłane do zatwierdzenia." });
@@ -155,6 +157,7 @@ const CreateEvent = () => {
   if (loadError) {
     console.warn("Google maps load error", loadError);
   }
+
 
   return (
     <div className="mx-auto max-w-6xl p-6">

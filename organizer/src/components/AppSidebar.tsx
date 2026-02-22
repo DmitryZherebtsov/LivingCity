@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button";
 import { logout } from "@/lib/auth";
 
 const navItems = [
-  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-  { label: "Create Event", path: "/events/create", icon: CalendarPlus },
-  { label: "Organization", path: "/settings", icon: Building2 },
+  { label: "Panel główny", path: "/dashboard", icon: LayoutDashboard },
+  { label: "Utwórz wydarzenie", path: "/events/create", icon: CalendarPlus },
+  { label: "Organizacja", path: "/settings", icon: Building2 },
 ];
 
 const AppSidebar = () => {
@@ -44,7 +44,7 @@ const AppSidebar = () => {
         </div>
 
         <div className="text-center">
-          <p className="text-sm font-semibold">Organizer Panel</p>
+          <p className="text-sm font-semibold">Panel Organizatora</p>
           <p className="text-xs text-muted-foreground truncate">
             {email}
           </p>
@@ -79,7 +79,7 @@ const AppSidebar = () => {
           onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />
-          Logout
+          Wyloguj się
         </Button>
       </div>
     </aside>
