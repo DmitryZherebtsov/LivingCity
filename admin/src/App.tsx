@@ -99,19 +99,11 @@ const App = () => (
               <Route 
                 path="/events-pending" 
                 element={
-                   <ProtectedRoute allowedRoles={["admin"]}>
+                   <ProtectedRoute allowedRoles={["admin", "moderator"]}>
                     <AdminPendingEvents />
                   </ProtectedRoute>
                   } />
 
-
-              {/* <Route
-                path="/organizer/create-event"
-                element={
-                  <ProtectedRoute allowedRoles={["organizer"]}>
-                    <CreateEventPage />
-                  </ProtectedRoute>
-                }/> */}
 
               <Route path="/settings" element={<Settings />} />
             </Route>

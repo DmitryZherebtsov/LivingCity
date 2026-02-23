@@ -136,9 +136,7 @@ const CreateEvent = () => {
 
         filesToUpload.forEach((f) => fd.append("images", f));
 
-        await api.post(`/events/${eventId}/images?original_first=true`, fd, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await api.post(`/events/${eventId}/images?original_first=true`, fd);
       }
 
       console.log(payload);

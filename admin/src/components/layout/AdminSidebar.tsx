@@ -25,20 +25,19 @@ export function AdminSidebar() {
   // const isOrganizer = role === "organizer";
 
   const navItems = [
-    { to: "/", icon: LayoutDashboard, label: "Panel główny" },
-    { to: "/events", icon: CalendarDays, label: "Wydarzenia" },
 
     ...(isAdmin
       ? [
-          { to: "/analytics", icon: BarChart3, label: "Analityka" },
+          { to: "/", icon: LayoutDashboard, label: "Panel główny" },
           { to: "/staff", icon: UserCog, label: "Zespół" },
           { to: "/users", icon: Users, label: "Użytkownicy" },
           { to: "/organizations", icon: BookCheck, label: "Organizacje" },
-          { to: "/events-pending", icon: ClipboardCheck, label: "Weryfikacja wydarzeń" },
+          { to: "/analytics", icon: BarChart3, label: "Analityka" },
         ]
       : []),
-    
 
+    { to: "/events", icon: CalendarDays, label: "Wydarzenia" },
+    { to: "/events-pending", icon: ClipboardCheck, label: "Weryfikacja wydarzeń" },
     { to: "/settings", icon: Settings, label: "Ustawienia" },
   ];
 

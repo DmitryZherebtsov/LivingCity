@@ -154,11 +154,11 @@ export default function Analytics() {
     return () => { mounted = false; };
   }, []);
 
-  return (
+    return (
     <div className="p-6 lg:p-8 space-y-6">
       <div>
-        <h1 className="page-header">Analytics</h1>
-        <p className="page-description">Insights and performance metrics</p>
+        <h1 className="page-header">Analityka</h1>
+        <p className="page-description">Statystyki i wskaźniki wydajności</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -166,7 +166,7 @@ export default function Analytics() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Users</p>
+                <p className="text-sm text-muted-foreground">Łączna liczba użytkowników</p>
                 <p className="text-2xl font-bold mt-1">
                   {metrics.totalUsers.toLocaleString()}
                 </p>
@@ -182,12 +182,11 @@ export default function Analytics() {
           </CardContent>
         </Card>
 
-
         <Card className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">New Users (30d)</p>
+                <p className="text-sm text-muted-foreground">Nowi użytkownicy (30 dni)</p>
                 <p className="text-2xl font-bold mt-1">{metrics.newAttendees.toLocaleString()}</p>
                 <div className="flex items-center gap-1 mt-2 text-success text-sm">
                   <TrendingUp className="w-4 h-4" />
@@ -205,7 +204,7 @@ export default function Analytics() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Events Created</p>
+                <p className="text-sm text-muted-foreground">Utworzone wydarzenia</p>
                 <p className="text-2xl font-bold mt-1">{metrics.totalEvents.toLocaleString()}</p>
                 <div className="flex items-center gap-1 mt-2 text-success text-sm">
                   <TrendingUp className="w-4 h-4" />
@@ -223,7 +222,7 @@ export default function Analytics() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Active Locations</p>
+                <p className="text-sm text-muted-foreground">Aktywne lokalizacje</p>
                 <p className="text-2xl font-bold mt-1">{metrics.activeLocations}</p>
                 <div className="flex items-center gap-1 mt-2 text-destructive text-sm">
                   <TrendingDown className="w-4 h-4" />
@@ -241,7 +240,7 @@ export default function Analytics() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="animate-fade-in">
           <CardHeader>
-            <CardTitle className="text-lg">Events & Attendees Growth</CardTitle>
+            <CardTitle className="text-lg">Wzrost liczby wydarzeń i uczestników</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-72">
@@ -277,7 +276,7 @@ export default function Analytics() {
 
         <Card className="animate-fade-in">
           <CardHeader>
-            <CardTitle className="text-lg">Events by Category</CardTitle>
+            <CardTitle className="text-lg">Wydarzenia według kategorii</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-72 flex items-center">
@@ -313,7 +312,7 @@ export default function Analytics() {
 
       <Card className="animate-fade-in">
         <CardHeader>
-          <CardTitle className="text-lg">Events by Location</CardTitle>
+          <CardTitle className="text-lg">Wydarzenia według lokalizacji</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-72">
