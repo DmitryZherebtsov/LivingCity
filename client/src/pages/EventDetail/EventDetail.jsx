@@ -359,7 +359,7 @@ export default function EventDetail() {
               </div>
             )}
 
-            {/* Participation button */}
+=
             <div style={{ marginTop: 12 }}>
               <button
                 className={`ed-cta ed-cta-participation ${isGoing ? "joined" : ""}`}
@@ -376,10 +376,7 @@ export default function EventDetail() {
               </button>
             </div>
 
-            <div className="ed-small" style={{ marginTop: 8 }}>
-              Bezpłatna anulacja do 48 godzin przed wydarzeniem
-            </div>
-
+    
             <div className="ed-sep" />
 
             <div className="ed-organizer">

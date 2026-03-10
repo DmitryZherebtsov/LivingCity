@@ -77,7 +77,8 @@
 
 .lc-profile-grid {
   display: grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: 360px;
+  justify-content: center;
   gap: 28px;
   max-width: 1200px;
   margin: 0 auto;

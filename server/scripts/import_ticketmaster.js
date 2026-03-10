@@ -8,7 +8,7 @@ const pool = require('../config/dbConfig');
 
 const TM_KEY = process.env.TM_KEY;
 if (!TM_KEY) {
-  console.error('Please set TM_KEY in .env');
+  console.error('Nie znalieziono TM_KEY w pliku .env');
   process.exit(1);
 }
 

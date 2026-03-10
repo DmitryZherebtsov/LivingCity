@@ -1,6 +1,6 @@
 const eventModel = require('../models/eventModel');
 const pool = require('../config/dbConfig');
-const { sendRejectionEmail } = require('../services/emailService');
+const { sendRejectedEmail, sendApprovedEmail } = require('../services/emailService');
 
 const validateCoords = (lon, lat) => {
   if (lon === undefined || lat === undefined) return false;
@@ -207,7 +207,7 @@ exports.approve = async (req, res) => {
 
     if (organization?.contact_email) {
       try {
-        await sendApprovalEmail(organization.contact_email, {
+        await sendApprovedEmail(organization.contact_email, {
           organizer_name: organization.name,
           event_title: updated.title,
           event_url: `${process.env.SITE_URL}/events/${updated.id}`,
@@ -253,7 +253,7 @@ exports.reject = async (req, res) => {
 
     if (organization?.contact_email) {
       try {
-        await sendRejectionEmail(
+        await sendRejectedEmail(
           organization.contact_email,
           reason,
           {

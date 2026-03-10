@@ -208,7 +208,7 @@ const Profile = () => {
             </form>
           </section>
 
-          <section className="lc-profile-card lc-profile-events-card">
+          {/* <section className="lc-profile-card lc-profile-events-card">
             <header className="lc-profile-events-header">
               <h2>Moje wydarzenia</h2>
               <p className="lc-profile-events-sub">
@@ -275,7 +275,7 @@ const Profile = () => {
                 </div>
               )}
             </div>
-          </section>
+          </section> */}
         </div>
       </main>
     </div>

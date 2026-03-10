@@ -188,10 +188,7 @@ const Sidebar = ({
       <div className="event-type-filters">
         <span className="filters-title">Typ wydarzenia</span>
 
-        <div
-          className={`event-type-tags ${compactScroll ? "compact" : "multirow"}`}
-          ref={tagsRef}
-        >
+        <div className={`event-type-tags ${compactScroll ? "compact" : "multirow"}`} ref={tagsRef}>
           {eventTypes.map((type) => {
             const { h, s, l } = stringToHsl(type || "Inne");
             const baseBg = hslToCss(h, s, l, 0.08);
