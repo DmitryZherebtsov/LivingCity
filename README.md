@@ -3,10 +3,10 @@
 LivingCity to aplikacja webowa umożliwiająca organizowanie i przeglądanie lokalnych wydarzeń w mieście.
 System pozwala użytkownikom wyszukiwać wydarzenia na mapie, zapisywać się na nie oraz zarządzać nimi jako organizator lub administrator.
 
-Projekt składa się z dwóch części:
+Projekt składa się z kilku części:
 
-Frontend – aplikacja użytkownika (admin)
-Backend – API serwera (server)
+Frontend – aplikacja użytkownika 
+Backend – API serwera
 Baza danych – PostgreSQL
 
 ---
@@ -24,10 +24,11 @@ npm jest instalowany razem z Node.js
 
 Struktura projektu
 
-Projekt zawiera dwa główne foldery:
-
-admin – aplikacja frontendowa (React + Vite)
-server – backend API (Node.js + Express)
+Główne foldery:
+admin – panel administracyjny
+client - główna strona z mapą
+organizer - panel organizatora 
+server – backend API
 
 Frontend komunikuje się z backendem przez REST API.
 
@@ -85,7 +86,7 @@ npm install
 
 Przejdź do folderu admin
 
-cd admin
+cd folder części frontendowej
 
 Zainstaluj zależności:
 
@@ -100,15 +101,12 @@ Projekt wymaga uruchomienia dwóch usług w osobnych terminalach.
 1. Backend
 
 Przejdź do folderu server
-
 cd server
 
 Uruchom serwer:
-
 node index.js
 
 Serwer powinien uruchomić się pod adresem:
-
 http://localhost:3000
 
 2. Frontend
@@ -122,7 +120,6 @@ Uruchom aplikację:
 npm run dev
 
 Frontend będzie dostępny pod adresem:
-
 http://localhost:5173
 
 ---
@@ -148,4 +145,3 @@ Frontend (React + Vite)
 Backend API (Node.js + Express)
 ↓
 Baza danych (PostgreSQL)
-
