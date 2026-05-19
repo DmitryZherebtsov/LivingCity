@@ -1,7 +1,10 @@
+
 # LivingCity – Platforma do organizacji lokalnych wydarzeń
 
 LivingCity to aplikacja webowa umożliwiająca organizowanie i przeglądanie lokalnych wydarzeń w mieście.
 System pozwala użytkownikom wyszukiwać wydarzenia na mapie, zapisywać się na nie oraz zarządzać nimi jako organizator lub administrator.
+
+<img width="1599" height="738" alt="event_5" src="https://github.com/user-attachments/assets/22fc7ba7-f37b-4863-a964-eb85e4fb8a4a" />
 
 Projekt składa się z kilku części:
 
