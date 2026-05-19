@@ -129,8 +129,6 @@ http://localhost:5173
 
 Testowanie API
 
-Po uruchomieniu backendu można testować API np. w Postmanie.
-
 Przykładowe endpointy:
 
 POST /auth/login – logowanie użytkownika
@@ -138,6 +136,7 @@ POST /auth/register – rejestracja użytkownika
 GET /api/events – pobranie listy wydarzeń
 POST /api/events – dodanie wydarzenia
 DELETE /api/events/:id – usunięcie wydarzenia
+...
 
 ---
 
