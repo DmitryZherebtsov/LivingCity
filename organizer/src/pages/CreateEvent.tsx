@@ -97,7 +97,6 @@ const CreateEvent = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-
     if (!form.title || !form.start_time || !form.lat || !form.lon) {
       toast({ title: "Błąd", description: "Uzupełnij tytuł, datę i współrzędne.", variant: "destructive" });
       return;
@@ -107,7 +106,7 @@ const CreateEvent = () => {
     try {
       const payload = {
         title: form.title,
-        description: form.description,
+        description: form.description, 
         event_type: form.event_type,
         url: form.url || null,
         organizer: form.organizer || null,

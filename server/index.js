@@ -31,12 +31,9 @@ app.use(cors({
   credentials: true,
 }));
 
-
-
 app.use(express.json());
 app.use(cookieParser());
 
-/* routes  */
 app.use('/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/users', userRoutes);
@@ -48,7 +45,6 @@ app.use('/api/organizer', organizerRoutes);
 app.use("/api/participation", eventParticipationRoutes);
 
 
-/* folder for images  */
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {

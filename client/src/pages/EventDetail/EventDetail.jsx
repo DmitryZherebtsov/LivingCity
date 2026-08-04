@@ -239,7 +239,7 @@ export default function EventDetail() {
                 {event.event_type || "—"}
               </span>
               <h1 className="ed-title">{event.title}</h1>
-              <p className="ed-sub">{event.description}</p>
+              {/* <p className="ed-sub">{event.description}</p> */}
             </div>
 
             <div className="ed-actions">
@@ -359,7 +359,6 @@ export default function EventDetail() {
               </div>
             )}
 
-=
             <div style={{ marginTop: 12 }}>
               <button
                 className={`ed-cta ed-cta-participation ${isGoing ? "joined" : ""}`}

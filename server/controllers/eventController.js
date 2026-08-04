@@ -1,6 +1,7 @@
 const eventModel = require('../models/eventModel');
 const pool = require('../config/dbConfig');
 const { sendRejectedEmail, sendApprovedEmail } = require('../services/emailService');
+const ROLES = require('../config/roles');
 
 const validateCoords = (lon, lat) => {
   if (lon === undefined || lat === undefined) return false;
@@ -129,16 +130,36 @@ const getMyEvents = async (req, res) => {
 const update = async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
-    const body = req.body;
+    const body = { ...req.body };
 
     if ((body.lon !== undefined || body.lat !== undefined) && !validateCoords(body.lon, body.lat)) {
       return res.status(400).json({ error: 'valid lon and lat are required' });
+    }
+
+    const isOrganizer = String(req.user?.roleName).toLowerCase() === ROLES.ORGANIZER;
+
+    if (isOrganizer) {
+      const orgRow = await pool.query(
+        `SELECT organization_id FROM organizators WHERE user_id = $1 LIMIT 1`,
+        [req.user.id]
+      );
+      const organizationId = orgRow.rows[0]?.organization_id;
+
+      const existing = await eventModel.getEventById(id);
+      if (!organizationId || existing.organization_id !== organizationId) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+
+      // organizers can edit their own event details, but moderation fields stay admin-only
+      delete body.status;
+      delete body.organization_id;
     }
 
     const updated = await eventModel.updateEvent(id, body);
     res.json(updated);
   } catch (err) {
     console.error(err);
+    if (err.message === 'Event not found') return res.status(404).json({ error: 'Not found' });
     res.status(500).json({ error: 'Server error' });
   }
 };

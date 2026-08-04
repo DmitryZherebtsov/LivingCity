@@ -12,9 +12,10 @@ router.get('/', controller.list);
 router.get('/event-types', controller.getEventTypes);
 router.get('/:id', controller.getOne);
 router.put('/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.update);
+router.patch('/:id', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), controller.update);
 router.delete('/:id', requireAuth, requireRole([ROLES.ADMIN, ROLES.ORGANIZER]), controller.remove);
 
-router.patch('/approve/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.approve);
-router.patch('/reject/:id', requireAuth, requireRole([ROLES.ADMIN]), controller.reject);
+router.patch('/approve/:id', requireAuth, requireRole([ROLES.ADMIN, ROLES.MODERATOR]), controller.approve);
+router.patch('/reject/:id', requireAuth, requireRole([ROLES.ADMIN, ROLES.MODERATOR]), controller.reject);
 
 module.exports = router;
