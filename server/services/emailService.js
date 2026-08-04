@@ -19,16 +19,6 @@ async function sendEmail(templateId, toEmail, params = {}) {
     },
   };
 
-//   if (ACCESS_TOKEN) payload.accessToken = ACCESS_TOKEN;
-
-//   console.log({ 
-//     SERVICE_ID,
-//     TEMPLATE_ID: templateId,
-//     USER_ID,
-//     HAS_ACCESS_TOKEN: !!ACCESS_TOKEN,
-//     });
-
-
   return axios.post(SEND_URL, payload, {
     headers: { "Content-Type": "application/json" },
   });

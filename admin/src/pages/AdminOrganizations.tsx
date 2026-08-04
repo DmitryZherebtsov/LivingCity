@@ -58,6 +58,12 @@ export default function AdminOrganizations() {
     }
   }, [isLoading, user]);
 
+  useEffect(() => {
+    if (!isLoading && user?.role === "admin") {
+      fetchOrganizations();
+    }
+  }, [statusFilter]);
+
   const fetchOrganizations = async () => {
     try {
       setLoading(true);
@@ -166,13 +172,6 @@ export default function AdminOrganizations() {
       </div>
     );
   }
-
-  useEffect(() => {
-    if (!isLoading && user?.role === "admin") {
-      fetchOrganizations();
-    }
-  }, [statusFilter]);
-
 
   return (
     <div className="p-6 lg:p-8 space-y-6">

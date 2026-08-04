@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchEvents, EventItem } from "@/services/eventsService";
+import { fetchEvents, Event } from "@/services/eventsService";
 
 export type DashboardStats = {
   totalEvents: number;
@@ -9,7 +9,7 @@ export type DashboardStats = {
 };
 
 export function useEventsData() {
-  const [events, setEvents] = useState<EventItem[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
