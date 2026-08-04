@@ -12,32 +12,33 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Check, X, Search } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import api from "@/lib/api";
+import { fetchPendingEvents, approveEvent, rejectEvent, Event } from "@/services/eventsService";
+import { getErrorMessage } from "@/lib/utils";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function AdminPendingEvents() {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<any | null>(null);
+  const [selected, setSelected] = useState<Event | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 8;
 
   useEffect(() => {
-    fetchEvents();
+    loadEvents();
   }, []);
 
-  const fetchEvents = async () => {
+  const loadEvents = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/api/events?status=pending");
-      setEvents(res.data || []);
-    } catch (err: any) {
+      const data = await fetchPendingEvents();
+      setEvents(data || []);
+    } catch (err) {
       toast({
         title: "Błąd",
-        description: err.response?.data?.error || "Nie można pobrać wydarzeń",
+        description: getErrorMessage(err, "Nie można pobrać wydarzeń"),
         variant: "destructive",
       });
     } finally {
@@ -46,11 +47,11 @@ export default function AdminPendingEvents() {
   };
 
   const handleUpdateStatus = async (
-      event: any,
+      event: Event,
       status: "approve" | "reject"
     ) => {
 
-      let reason = null;
+      let reason: string | null = null;
 
       if (status === "reject") {
         reason = window.prompt(
@@ -73,9 +74,11 @@ export default function AdminPendingEvents() {
       }
 
       try {
-        await api.patch(`/api/events/${status}/${event.id}`, {
-          reason: reason,  
-        });
+        if (status === "approve") {
+          await approveEvent(event.id);
+        } else {
+          await rejectEvent(event.id, reason);
+        }
 
         setEvents((s) => s.filter((e) => e.id !== event.id));
         if (selected?.id === event.id) setSelected(null);
@@ -87,10 +90,10 @@ export default function AdminPendingEvents() {
               : "Wydarzenie odrzucone",
         });
 
-      } catch (err: any) {
+      } catch (err) {
         toast({
           title: "Błąd",
-          description: err.response?.data?.error || "Operacja nie powiodła się",
+          description: getErrorMessage(err, "Operacja nie powiodła się"),
           variant: "destructive",
         });
       }
@@ -260,7 +263,7 @@ export default function AdminPendingEvents() {
               <div>
                 <h3 className="font-medium mb-2">Galeria</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  {selected.images.map((img: any) => (
+                  {selected.images.map((img) => (
                     <img
                       key={img.id}
                       src={`${BASE_URL}/uploads/events/${selected.id}/${img.filename}`}

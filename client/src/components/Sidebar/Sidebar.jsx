@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import mapboxgl from "mapbox-gl";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import axios from "axios";
+import { fetchEventTypes } from "../../services/eventsApi";
 
 const stringToHsl = (str) => {
   let hash = 0;
@@ -46,8 +46,7 @@ const Sidebar = ({
   useEffect(() => {
     const fetchTypes = async () => {
       try {
-        const res = await axios.get('/api/events/event-types');
-        const types = res.data || [];
+        const types = (await fetchEventTypes()) || [];
         setEventTypes(types);
         if (!selectedTypes || selectedTypes.length === 0) {
           setSelectedTypes(types.slice());

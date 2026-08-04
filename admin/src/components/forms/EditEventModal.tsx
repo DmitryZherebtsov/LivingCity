@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import { fetchEventById, updateEvent } from "@/services/tableManage";
+import { fetchEventById, updateEvent } from "@/services/eventsService";
 
 type Props = {
   eventId: number | null;

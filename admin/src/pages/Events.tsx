@@ -10,9 +10,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { fetchEvents, Event } from "@/services/eventsService";
+import { fetchEvents, deleteEvent, fetchEventById, rejectEvent, Event, EventDetail } from "@/services/eventsService";
 import { EditEventModal } from "@/components/forms/EditEventModal";
-import api from "@/lib/api";
+import { getErrorMessage } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 
 const statusStyles = {
@@ -41,7 +41,7 @@ export default function Events() {
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
   const [sideOpen, setSideOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<EventDetail | null>(null);
   const [sideLoading, setSideLoading] = useState(false);
 
   const pageSize = 7;
@@ -90,7 +90,7 @@ export default function Events() {
   const handleDelete = async (id: number) => {
     if (!confirm("Czy na pewno chcesz usunąć to wydarzenie?")) return;
     try {
-      await api.delete(`/api/events/${id}`);
+      await deleteEvent(id);
       toast({ title: "Usunięto" });
       setEvents((s) => s.filter((e) => e.id !== id));
       if (selectedEvent?.id === id) { setSelectedEvent(null); setSideOpen(false); }
@@ -105,10 +105,9 @@ export default function Events() {
     setSideOpen(true);
     setSelectedEvent(null);
     try {
-      const res = await api.get(`/api/events/${id}`);
-      const data = res.data;
+      const data = await fetchEventById(id);
       if (Array.isArray(data.images)) {
-        data.images = data.images.map((img: any) => ({
+        data.images = data.images.map((img) => ({
           ...img,
           url: img.url ? img.url : `/uploads/events/${data.id}/${img.filename}`,
         }));
@@ -120,7 +119,7 @@ export default function Events() {
         };
       }
       setSelectedEvent(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("load event", err);
       toast({ title: "Błąd", description: "Nie można pobrać szczegółów", variant: "destructive" });
       setSideOpen(false);
@@ -133,14 +132,14 @@ export default function Events() {
     const reason = prompt("Powód odrzucenia (opcjonalnie):", "");
     if (reason === null) return; 
     try {
-      await api.patch(`/api/events/reject/${id}`, { reason });
+      await rejectEvent(id, reason);
       toast({ title: "Odrzucono wydarzenie" });
       setEvents((s) => s.filter((e) => e.id !== id));
       setSelectedEvent(null);
       setSideOpen(false);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      toast({ title: "Błąd", description: err.response?.data?.error || "Operacja nie powiodła się", variant: "destructive" });
+      toast({ title: "Błąd", description: getErrorMessage(err, "Operacja nie powiodła się"), variant: "destructive" });
     }
   };
 

@@ -1,15 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import api, { setAuthToken } from "@/lib/api";
+import { setAuthToken } from "@/lib/api";
+import { refreshSession, login as loginRequest, register as registerRequest, logout as logoutRequest, StaffProfile } from "@/services/authService";
+import { getErrorMessage } from "@/lib/utils";
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  name?: string;
-  role: "admin" | "moderator" | "viewer";
-  avatar?: string;
-  createdAt?: string;
-  organizer_status?: string | null;
-}
+export type UserProfile = StaffProfile;
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -38,8 +32,8 @@ useEffect(() => {
         setUser(JSON.parse(session));
       }
 
-      const res = await api.post("/auth/refresh", {});
-      const token = res.data?.accessToken;
+      const data = await refreshSession();
+      const token = data?.accessToken;
       if (!token) throw new Error("No token");
 
       setAccessToken(token);
@@ -60,53 +54,40 @@ useEffect(() => {
 
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
     try {
-      const res = await api.post("/auth/login", { email, password });
-      const { accessToken: token, user: profile } = res.data;
+      const { accessToken: token, user: profile } = await loginRequest(email, password);
       if (!token || !profile) {
         return { error: "Invalid server response" };
       }
       setAccessToken(token);
       setAuthToken(token);
-      
+
       setUser(profile);
       localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
       return {};
-    } catch (err: any) {
-      if (err.response?.data?.error || err.response?.data?.message) {
-        return { error: err.response.data.error || err.response.data.message };
-      }
-      return { error: "Network error" };
+    } catch (err) {
+      return { error: getErrorMessage(err, "Network error") };
     }
   };
 
   const register = async (email: string, password: string, name?: string): Promise<{ error?: string }> => {
-  try {
-    const res = await api.post("/auth/register", { email, password, name });
+    try {
+      const { accessToken: token, user: profile } = await registerRequest(email, password, name);
 
-    const token = res.data?.accessToken;
-    const profile = res.data?.user;
+      if (token && profile) {
+        setAccessToken(token);
+        setAuthToken(token);
+        setUser(profile);
+        localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
+      }
 
-    if (token && profile) {
-      setAccessToken(token);
-      setAuthToken(token);
-      setUser(profile);
-      localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
       return {};
+    } catch (err) {
+      return { error: getErrorMessage(err, "Network error") };
     }
-
-    return {};
-
-  } catch (err: any) {
-    if (err.response?.data?.error || err.response?.data?.message) {
-      return { error: err.response.data.error || err.response.data.message };
-    }
-    return { error: "Network error" };
-  }
-};
-
+  };
 
   const logout = async (): Promise<void> => {
-    await api.post("/auth/logout").catch(() => {});
+    await logoutRequest().catch(() => {});
     setAccessToken(null);
     setAuthToken(null);
     setUser(null);

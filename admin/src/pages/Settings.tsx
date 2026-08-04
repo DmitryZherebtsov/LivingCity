@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import api from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { fetchMyProfile, updateMyProfile, deleteMyAccount, MyProfile } from "@/services/profileService";
+import { cn, getErrorMessage } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
-  const [userSettings, setUser] = useState<any>(null);
+  const [userSettings, setUser] = useState<MyProfile | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [profileFile, setProfileFile] = useState<File | null>(null);
@@ -28,10 +28,10 @@ export default function Settings() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get("/api/users/me");
-        setUser(res.data);
-        setName(res.data.name || "");
-        setEmail(res.data.email || "");
+        const profile = await fetchMyProfile();
+        setUser(profile);
+        setName(profile.name || "");
+        setEmail(profile.email || "");
       } catch (err) {
         console.error("Failed to fetch profile", err);
       }
@@ -45,20 +45,19 @@ export default function Settings() {
       fd.append("email", email);
       if (profileFile) fd.append("profile_image", profileFile);
 
-      await api.patch("/api/users/me", fd);
+      await updateMyProfile(fd);
 
       toast({
         title: "Profil zaktualizowany",
         description: "Twoje dane zostały zapisane pomyślnie.",
       });
 
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
 
       toast({
         title: "Błąd aktualizacji",
-        description:
-          err?.response?.data?.message || "Nie udało się zaktualizować profilu.",
+        description: getErrorMessage(err, "Nie udało się zaktualizować profilu."),
         variant: "destructive",
       });
     }
@@ -69,9 +68,7 @@ export default function Settings() {
     if (!password) return;
 
     try {
-      await api.delete("/api/users/me", {
-        data: { password, hard: true },
-      });
+      await deleteMyAccount(password);
 
       toast({
         title: "Konto usunięte",
@@ -82,13 +79,12 @@ export default function Settings() {
         window.location.href = "/";
       }, 1500);
 
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
 
       toast({
         title: "Nie udało się usunąć konta",
-        description:
-          err?.response?.data?.message || "Spróbuj ponownie później.",
+        description: getErrorMessage(err, "Spróbuj ponownie później."),
         variant: "destructive",
       });
     }

@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import api from "@/lib/api";
+import {
+  fetchOrganization,
+  updateOrganization,
+  uploadOrganizationLogo,
+  deleteOrganizationLogo,
+  OrganizationForm,
+} from "@/services/organizationService";
+import { getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,18 +18,6 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-
-interface OrganizationForm {
-  id?: number;
-  name: string;
-  website: string;
-  contact_email: string;
-  phone: string;
-  address: string;
-  city: string;
-  nip_krs: string;
-  logo_url: string;
-}
 
 const Settings = () => {
   const [form, setForm] = useState<OrganizationForm>({
@@ -42,13 +37,12 @@ const Settings = () => {
   useEffect(() => {
     const loadOrganization = async () => {
       try {
-        const res = await api.get("/organizer/organization");
-        setForm(res.data);
-      } catch (err: any) {
+        const data = await fetchOrganization();
+        setForm(data);
+      } catch (err) {
         toast({
           title: "Błąd",
-          description:
-            err.response?.data?.error || "Nie udało się pobrać danych organizacji",
+          description: getErrorMessage(err, "Nie udało się pobrać danych organizacji"),
           variant: "destructive",
         });
       } finally {
@@ -67,17 +61,16 @@ const Settings = () => {
     setSaving(true);
 
     try {
-      await api.patch("/organizer/organization", form);
+      await updateOrganization(form);
 
       toast({
         title: "Zapisano zmiany",
         description: "Dane organizacji zostały zaktualizowane.",
       });
-    } catch (err: any) {
+    } catch (err) {
       toast({
         title: "Błąd zapisu",
-        description:
-          err.response?.data?.error || "Nie udało się zapisać zmian",
+        description: getErrorMessage(err, "Nie udało się zapisać zmian"),
         variant: "destructive",
       });
     } finally {
@@ -88,10 +81,6 @@ const Settings = () => {
   if (loading) {
     return <div className="p-8">Ładowanie danych organizacji...</div>;
   }
-
-  // console.log(form.logo_url);
-  console.log(form);
-
 
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto">
@@ -181,7 +170,7 @@ const Settings = () => {
                     type="button"
                     variant="destructive"
                     onClick={async () => {
-                      await api.delete("/organizer/logo");
+                      await deleteOrganizationLogo();
                       update("logo_url", "");
                       toast({ title: "Usunięto logo" });
                     }}
@@ -198,14 +187,9 @@ const Settings = () => {
                   const file = e.target.files?.[0];
                   if (!file) return;
 
-                  const fd = new FormData();
-                  fd.append("logo", file);
+                  const { logo_url } = await uploadOrganizationLogo(file);
 
-                  const res = await api.post("/organizer/logo", fd, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                  });
-
-                  update("logo_url", res.data.logo_url);
+                  update("logo_url", logo_url);
                   toast({ title: "Logo zaktualizowane" });
                 }}
               />

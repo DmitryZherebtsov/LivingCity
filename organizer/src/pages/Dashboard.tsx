@@ -7,7 +7,7 @@ import {
   Plus,
   Clock,
 } from "lucide-react";
-import api from "@/lib/api";
+import { fetchMyEvents, Event } from "@/services/eventsService";
 import { useOrganizerAuth } from "@/context/OrganizerAuthContext";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Button } from "@/components/ui/button";
@@ -15,19 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 
-interface Event {
-  id: number;
-  title: string;
-  address: string;
-  city: string;
-  start_time: string;
-  capacity: number;
-  visitor_count: number;
-  status: "pending" | "approved" | "rejected";
-}
-
 function OrganizerDashboard() {
-  const { user, isLoading } = useOrganizerAuth();
+  const { isLoading } = useOrganizerAuth();
   const navigate = useNavigate();
 
   const [events, setEvents] = useState<Event[]>([]);
@@ -37,8 +26,8 @@ function OrganizerDashboard() {
     if (isLoading) return;
 
     const load = async () => {
-      const res = await api.get("/events/my");
-      setEvents(res.data);
+      const data = await fetchMyEvents();
+      setEvents(data);
       setLoading(false);
     };
 
