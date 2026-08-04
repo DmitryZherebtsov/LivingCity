@@ -1,21 +1,7 @@
-import axios from "axios";
+import api from "@/lib/api";
+import { getErrorMessage } from "@/lib/utils";
 
-const API = axios.create({
-  baseURL: "http://localhost:3000/api/organizer-auth",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-export async function register(data: {
+export interface RegisterPayload {
   orgName: string;
   description?: string;
   website?: string;
@@ -28,13 +14,20 @@ export async function register(data: {
   fullName: string;
   password: string;
   nipKrs?: string;
-}) {
+}
+
+export interface LoginResult {
+  accessToken: string;
+  refreshToken: string;
+  organizationId: string;
+}
+
+export async function register(data: RegisterPayload) {
   try {
-    const response = await API.post("/register", {
+    const response = await api.post("/organizer-auth/register", {
       email: data.email,
       password: data.password,
       name: data.fullName,
-
       orgName: data.orgName,
       description: data.description,
       website: data.website,
@@ -47,20 +40,14 @@ export async function register(data: {
     });
 
     return response.data;
-
-  } catch (error: any) {
-    throw new Error(
-      error.response?.data?.error || "Registration failed"
-    );
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Registration failed"));
   }
 }
 
-export async function login(email: string, password: string) {
+export async function login(email: string, password: string): Promise<LoginResult> {
   try {
-    const response = await API.post("/login", {
-      email,
-      password,
-    });
+    const response = await api.post("/organizer-auth/login", { email, password });
 
     const { accessToken, refreshToken, organizationId } = response.data;
 
@@ -69,14 +56,12 @@ export async function login(email: string, password: string) {
     localStorage.setItem("organizationId", organizationId);
 
     return response.data;
-  } catch (error: any) {
-    throw new Error(
-      error.response?.data?.error || "Login failed"
-    );
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Login failed"));
   }
 }
 
-export function logout() {
+export function logout(): void {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("organizationId");

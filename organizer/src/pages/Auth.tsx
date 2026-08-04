@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { register, login } from "@/lib/auth";
+import { register, login } from "@/services/authService";
 import { toast } from "@/hooks/use-toast";
 import "@/pages/styles/auth.css";
 
@@ -132,7 +132,7 @@ const Auth = () => {
         password: regForm.password,
         fullName: regForm.fullName,
         contactEmail: regForm.contactEmail,
-      } as any); 
+      });
 
       toast({
         title: "Rejestracja zakończona",

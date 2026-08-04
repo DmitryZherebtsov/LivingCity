@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import useEvents from "../../hooks/useEvents";
 import "./EventDetail.css";
-import api from "../../api/axios";
+import { checkParticipation, joinEvent, leaveEvent } from "../../services/participationApi";
+import { getErrorMessage } from "../../utils/errors";
 import { toast } from "react-toastify";
 
 const getEventImageUrl = (event, index = 0) => {
@@ -102,8 +103,8 @@ export default function EventDetail() {
 
     const check = async () => {
       try {
-        const res = await api.get(`/api/participation/${event.id}/check`);
-        setIsGoing(!!res.data?.going);
+        const going = await checkParticipation(event.id);
+        setIsGoing(going);
       } catch (err) {
     
       }
@@ -152,12 +153,12 @@ export default function EventDetail() {
 
     try {
       if (!isGoing) {
-        await api.post(`/api/participation/${event.id}`);
+        await joinEvent(event.id);
         setIsGoing(true);
         setLocalVisitors((v) => v + 1);
         toast?.({ title: "Dołączono do wydarzenia" });
       } else {
-        await api.delete(`/api/participation/${event.id}`);
+        await leaveEvent(event.id);
         setIsGoing(false);
         setLocalVisitors((v) => Math.max(0, v - 1));
         toast?.({ title: "Wypisano z wydarzenia" });
@@ -165,10 +166,8 @@ export default function EventDetail() {
     } catch (err) {
       if (err?.response?.status === 401) {
         window.alert("Zaloguj się, aby wziąć udział w wydarzeniu.");
-      } else if (err?.response?.data?.error) {
-        toast?.({ title: "Błąd", description: err.response.data.error, variant: "destructive" });
       } else {
-        toast?.({ title: "Błąd", description: "Operacja nie powiodła się", variant: "destructive" });
+        toast?.({ title: "Błąd", description: getErrorMessage(err, "Operacja nie powiodła się"), variant: "destructive" });
       }
     } finally {
       setActionLoading(false);

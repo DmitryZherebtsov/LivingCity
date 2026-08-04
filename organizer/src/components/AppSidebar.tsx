@@ -7,7 +7,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { logout } from "@/lib/auth";
+import { logout } from "@/services/authService";
 
 const navItems = [
   { label: "Panel główny", path: "/dashboard", icon: LayoutDashboard },

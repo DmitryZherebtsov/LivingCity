@@ -1,4 +1,3 @@
-import axios from 'axios';
 import api from "@/lib/api";
 
 export interface Event {
@@ -20,7 +19,19 @@ export interface Event {
   updated_at: string;
   visitor_count: number;
   city: string | null;
+  first_image?: EventImage;
+  images?: EventImage[];
 }
+
+export interface EventImage {
+  id: number;
+  filename: string;
+  url?: string;
+}
+
+export type EventDetail = Event & {
+  status?: string;
+};
 
 export interface Stats {
   totalEvents: string;
@@ -34,13 +45,38 @@ export interface Stats {
 }
 
 
-export const fetchEvents = async () => {
+export const fetchEvents = async (): Promise<Event[]> => {
   const res = await api.get("/api/events");
   return res.data;
 };
 
-export async function deleteEvent(id: number) {
-  await api.delete(`/events/${id}`);
+export const fetchPendingEvents = async (): Promise<Event[]> => {
+  const res = await api.get("/api/events?status=pending");
+  return res.data;
+};
+
+export async function fetchEventById(id: number): Promise<EventDetail> {
+  const res = await api.get(`/api/events/${id}`);
+  if (!res?.data) throw new Error("Failed to fetch event");
+  return res.data;
+}
+
+export async function updateEvent(id: number, data: Partial<Event>): Promise<Event> {
+  const res = await api.put(`/api/events/${id}`, data);
+  if (!res || res.status >= 300) throw new Error("Failed to update event");
+  return res.data;
+}
+
+export async function deleteEvent(id: number): Promise<void> {
+  await api.delete(`/api/events/${id}`);
+}
+
+export async function approveEvent(id: number): Promise<void> {
+  await api.patch(`/api/events/approve/${id}`);
+}
+
+export async function rejectEvent(id: number, reason?: string | null): Promise<void> {
+  await api.patch(`/api/events/reject/${id}`, { reason });
 }
 
 const safePercentChange = (current: number, previous: number): string => {

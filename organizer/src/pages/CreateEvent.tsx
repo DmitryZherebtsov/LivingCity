@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "@/lib/api";
+import { createEvent, uploadEventImages } from "@/services/eventsService";
+import { getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -122,8 +123,7 @@ const CreateEvent = () => {
         status: "pending",
       };
 
-      const res = await api.post("/events", payload);
-      const created = res.data;
+      const created = await createEvent(payload);
       const eventId = created.id;
 
       const filesToUpload: File[] = [];
@@ -131,21 +131,13 @@ const CreateEvent = () => {
       otherImages.forEach((it) => filesToUpload.push(it.file));
 
       if (filesToUpload.length) {
-        const fd = new FormData();
-
-        filesToUpload.forEach((f) => fd.append("images", f));
-
-        await api.post(`/events/${eventId}/images?original_first=true`, fd);
+        await uploadEventImages(eventId, filesToUpload, { originalFirst: true });
       }
-
-      console.log(payload);
-
-      console.log("Created event", created);
 
       toast({ title: "Wysłano zgłoszenie", description: "Wydarzenie zostało wysłane do zatwierdzenia." });
       navigate("/organizer/event-waiting", { replace: true });
-    } catch (err: any) {
-      toast({ title: "Błąd tworzenia wydarzenia", description: err?.response?.data?.error || err.message, variant: "destructive" });
+    } catch (err) {
+      toast({ title: "Błąd tworzenia wydarzenia", description: getErrorMessage(err), variant: "destructive" });
     } finally {
       setLoading(false);
     }

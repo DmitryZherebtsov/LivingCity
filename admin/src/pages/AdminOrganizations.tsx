@@ -12,26 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Check, X, Search, ExternalLink } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import api from "@/lib/api";
+import { fetchOrganizations, updateOrganizationStatus, Organization } from "@/services/organizationsService";
+import { getErrorMessage } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 
-type OrganizationRaw = {
-  id: number;
-  name: string;
-  slug?: string | null;
-  description?: string | null;
-  website?: string | null;
-  contact_email?: string | null;
-  phone?: string | null;
-  address?: string | null;
-  city?: string | null;
-  logo_url?: string | null;
-  nip_krs?: string | null;
-  metadata?: Record<string, any>;
-  status: "pending" | "approved" | "rejected" | string;
-  created_at: string;
-  updated_at?: string | null;
-};
+type OrganizationRaw = Organization;
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -54,24 +39,24 @@ export default function AdminOrganizations() {
 
   useEffect(() => {
     if (!isLoading && user?.role === "admin") {
-      fetchOrganizations();
+      loadOrganizations();
     }
   }, [isLoading, user]);
 
   useEffect(() => {
     if (!isLoading && user?.role === "admin") {
-      fetchOrganizations();
+      loadOrganizations();
     }
   }, [statusFilter]);
 
-  const fetchOrganizations = async () => {
+  const loadOrganizations = async () => {
     try {
       setLoading(true);
-      const res = await api.get(`/api/admin/organizations?status=${statusFilter}`);
-      setOrganizations(res.data || []);
-    } catch (err: any) {
+      const data = await fetchOrganizations(statusFilter);
+      setOrganizations(data || []);
+    } catch (err) {
       console.error("fetchOrganizations error:", err);
-      if (err.response?.status === 401) {
+      if ((err as { response?: { status?: number } })?.response?.status === 401) {
         toast({
           title: "Brak autoryzacji",
           description: "Zaloguj się ponownie jako administrator",
@@ -80,7 +65,7 @@ export default function AdminOrganizations() {
       } else {
         toast({
           title: "Błąd pobierania organizacji",
-          description: err.response?.data?.error || "Wystąpił błąd serwera",
+          description: getErrorMessage(err, "Wystąpił błąd serwera"),
           variant: "destructive",
         });
       }
@@ -123,10 +108,7 @@ export default function AdminOrganizations() {
   if (selected?.id === org.id) setSelected(null);
 
   try {
-    await api.patch(`/api/admin/organizations/${org.id}/status`, {
-      status,
-      reason,
-    });
+    await updateOrganizationStatus(org.id, status, reason);
 
     toast({
       title:
@@ -135,13 +117,12 @@ export default function AdminOrganizations() {
           : "Organizacja odrzucona",
     });
 
-  } catch (err: any) {
+  } catch (err) {
     setOrganizations(prev);
 
     toast({
       title: "Błąd aktualizacji",
-      description:
-        err.response?.data?.error || "Nie udało się zmienić statusu",
+      description: getErrorMessage(err, "Nie udało się zmienić statusu"),
       variant: "destructive",
     });
   }
@@ -198,7 +179,7 @@ export default function AdminOrganizations() {
             variant="ghost"
             onClick={() => {
               setSearch("");
-              fetchOrganizations();
+              loadOrganizations();
             }}
             size="sm"
           >

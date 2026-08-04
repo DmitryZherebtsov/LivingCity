@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { logout } from "@/lib/auth";
+import { logout } from "@/services/authService";
 
 interface OrganizerUser {
   id: string;

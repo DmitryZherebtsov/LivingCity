@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { AppContext } from "../../context/AppContext";
-import api from "../../api/axios";
+import { updateMyProfile, deleteMyAccount } from "../../services/usersApi";
 import { toast } from "react-toastify";
 import {
   User,
@@ -40,7 +40,7 @@ const Profile = () => {
       fd.append("name", name);
       fd.append("email", email);
       if (profileFile) fd.append("profile_image", profileFile);
-      await api.patch("/api/users/me", fd);
+      await updateMyProfile(fd);
       toast.success("Profil zaktualizowany");
       await getUserData();
       setEditMode(false);
@@ -53,7 +53,7 @@ const Profile = () => {
     const password = prompt("Podaj hasło aby usunąć konto:");
     if (!password) return;
     try {
-      await api.delete("/api/users/me", { data: { password, hard: true } });
+      await deleteMyAccount(password);
       toast.success("Konto usunięte");
       await logout();
     } catch (error) {

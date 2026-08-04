@@ -1,6 +1,14 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "@/lib/api";
+import {
+  fetchEventById,
+  updateEvent,
+  deleteEvent,
+  uploadEventImages,
+  deleteEventImage,
+  type EventImage,
+} from "@/services/eventsService";
+import { getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,13 +22,6 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { Trash2, Upload } from "lucide-react";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
-
-type ImageItem = {
-  id: number | string;
-  filename: string;
-  position?: number;
-};
-
 
 const mapContainerStyle = { width: "100%", height: "260px" };
 const centerDefault = { lat: 52.2297, lng: 21.0122 };
@@ -54,7 +55,7 @@ function EventEdit() {
     status: ""
   });
 
-  const [images, setImages] = useState<ImageItem[]>([]);
+  const [images, setImages] = useState<EventImage[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
 
   const { isLoaded } = useJsApiLoader({ googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY || "" });
@@ -71,8 +72,7 @@ function EventEdit() {
     const load = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/events/${id}`);
-        const data = res.data;
+        const data = await fetchEventById(id);
         setForm({
           title: data.title || "",
           description: data.description || "",
@@ -92,8 +92,8 @@ function EventEdit() {
         });
 
         setImages(Array.isArray(data.images) ? data.images : []);
-      } catch (err: any) {
-        toast({ title: "Błąd", description: err?.response?.data?.error || "Nie można pobrać wydarzenia", variant: "destructive" });
+      } catch (err) {
+        toast({ title: "Błąd", description: getErrorMessage(err, "Nie można pobrać wydarzenia"), variant: "destructive" });
       } finally {
         setLoading(false);
       }
@@ -106,9 +106,10 @@ function EventEdit() {
 
   const handleSave = async (e?: React.FormEvent) => {
     e?.preventDefault();
+    if (!id) return;
     setSaving(true);
     try {
-      const payload: any = {
+      const payload = {
         title: form.title,
         description: form.description,
         event_type: form.event_type,
@@ -123,13 +124,13 @@ function EventEdit() {
         capacity: form.capacity ? Number(form.capacity) : null,
         is_free: Boolean(form.is_free),
         metadata: form.metadata,
-        status: form.status
+        status: form.status,
       };
 
-      await api.patch(`/events/${id}`, payload);
+      await updateEvent(id, payload);
       toast({ title: "Zapisano", description: "Dane wydarzenia zostały zaktualizowane." });
-    } catch (err: any) {
-      toast({ title: "Błąd zapisu", description: err?.response?.data?.error || "Nie udało się zapisać", variant: "destructive" });
+    } catch (err) {
+      toast({ title: "Błąd zapisu", description: getErrorMessage(err, "Nie udało się zapisać"), variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -141,31 +142,29 @@ function EventEdit() {
   };
 
   const handleUploadFiles = async () => {
-    if (!newFiles.length) return;
+    if (!newFiles.length || !id) return;
     setUploading(true);
     try {
-      const fd = new FormData();
-      newFiles.forEach((f) => fd.append("images", f));
-      const res = await api.post(`/events/${id}/images`, fd, { headers: { "Content-Type": "multipart/form-data" } });
-      setImages(res.data.images ?? res.data ?? []);
+      const updatedImages = await uploadEventImages(id, newFiles);
+      setImages(updatedImages);
       setNewFiles([]);
       if (fileRef.current) fileRef.current.value = "";
       toast({ title: "Wgrano", description: "Zdjęcia zostały dodane." });
-    } catch (err: any) {
-      toast({ title: "Błąd uploadu", description: err?.response?.data?.error || "Nie udało się wgrać", variant: "destructive" });
+    } catch (err) {
+      toast({ title: "Błąd uploadu", description: getErrorMessage(err, "Nie udało się wgrać"), variant: "destructive" });
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDeleteImage = async (img: ImageItem) => {
+  const handleDeleteImage = async (img: EventImage) => {
     if (!confirm("Usunąć zdjęcie?")) return;
     try {
-      await api.delete(`/events/images/${img.id}`);
+      await deleteEventImage(img.id);
       setImages((p) => p.filter((i) => i.id !== img.id));
       toast({ title: "Usunięto", description: "Zdjęcie usunięto." });
-    } catch (err: any) {
-      toast({ title: "Błąd", description: err?.response?.data?.error || "Nie można usunąć", variant: "destructive" });
+    } catch (err) {
+      toast({ title: "Błąd", description: getErrorMessage(err, "Nie można usunąć"), variant: "destructive" });
     }
   };
 
@@ -176,13 +175,13 @@ function EventEdit() {
     if (!confirmed) return;
 
     try {
-      await api.delete(`/events/${id}`);
+      await deleteEvent(id);
       toast({ title: "Usunięto", description: "Wydarzenie zostało usunięte." });
       navigate("/dashboard", { replace: true });
-    } catch (err: any) {
+    } catch (err) {
       toast({
         title: "Błąd usuwania",
-        description: err?.response?.data?.error || "Nie udało się usunąć wydarzenia",
+        description: getErrorMessage(err, "Nie udało się usunąć wydarzenia"),
         variant: "destructive",
       });
     }

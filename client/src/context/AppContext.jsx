@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
-import api from "../api/axios";
+import { login as loginRequest, register as registerRequest, logout as logoutRequest, fetchCurrentUser } from "../services/authApi";
+import { getErrorMessage } from "../utils/errors";
 
 export const AppContext = createContext(null);
 
@@ -41,62 +42,48 @@ export const AppProvider = ({ children }) => {
   };
 
   const getUserData = async () => {
-  try {
-    const resp = await api.get("/api/users/me");
+    try {
+      const data = await fetchCurrentUser();
 
-    if (resp?.data) {
-      setUser(resp.data);
-      localStorage.setItem("user", JSON.stringify(resp.data));
-      setIsLoggedin(true);
-      return resp.data;
+      if (data) {
+        setUser(data);
+        localStorage.setItem("user", JSON.stringify(data));
+        setIsLoggedin(true);
+        return data;
+      }
+
+      return null;
+    } catch (err) {
+      console.error("getUserData error:", err.response?.status);
+      return null;
     }
-
-    return null;
-  } catch (err) {
-    console.error("getUserData error:", err.response?.status);
-    return null;
-  }
-};
+  };
 
   const login = async ({ email, password }) => {
     try {
-      const resp = await api.post("/api/public-auth/login", {
-        email,
-        password,
-      });
-
-      const { accessToken, user } = resp.data;
+      const { accessToken, user } = await loginRequest({ email, password });
 
       persistLoginState(true, user, accessToken);
 
       return { ok: true };
     } catch (err) {
-      const message =
-        err?.response?.data?.message || "Login failed";
-      return { ok: false, message };
+      return { ok: false, message: getErrorMessage(err, "Login failed") };
     }
   };
 
   const register = async (formData) => {
     try {
-      const resp = await api.post(
-        "/api/public-auth/register",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const data = await registerRequest(formData);
 
-      return { ok: true, data: resp.data };
+      return { ok: true, data };
     } catch (err) {
-      const message =
-        err?.response?.data?.message || "Register failed";
-      return { ok: false, message };
+      return { ok: false, message: getErrorMessage(err, "Register failed") };
     }
   };
 
-
   const logout = async () => {
     try {
-      await api.post("/api/public-auth/logout");
+      await logoutRequest();
     } catch (err) {
     } finally {
       persistLoginState(false, null, null);
